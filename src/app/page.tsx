@@ -4,7 +4,18 @@ import Image from "next/image";
 import Navbar from './navbar'
 import { CopyIcon } from "lucide-react"
 import { useWallet } from './context/WalletContext';
+import { useWeb3ModalProvider } from "@web3modal/ethers/react";
+import { ethers, formatEther, JsonRpcProvider, Wallet, Contract, toBigInt } from 'ethers';
+import { RouterAddress, RouterAbi } from './config/constants/abi'
+// import { BigNumber } from "ethers/lib.commonjs/bignumber";
 
+
+const OverTenPoint = 500
+const OverFiftyPoint = 1000
+const OverHundredPoint = 1500;
+const DexPoint = 1000;
+const exceedTenK = 1500;
+const exceedFiftyK = 1500;
 
 const ConnectWalletButton: React.FC = () => {
   const { isConnected, connectWallet } = useWallet();
@@ -36,16 +47,143 @@ function formatNumber(value: number): string {
 }
 
 
+const LoadingSpinner: React.FC = () => (
+  <div className="flex justify-center py-8">
+    <div className="animate-spin h-8 w-8 border-8 border-[#1EEDD8] rounded-full border-t-transparent"></div>
+    <p className="m-1 ">Scanning...</p>
+  </div>
+);
 
 
 export default function Home() {
   const { isConnected, address } = useWallet();
-  const [point, setPoint] = useState(10000)
+  const { walletProvider } = useWeb3ModalProvider();
+
+  const [point, setPoint] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  const [tenTnx, setTenTnx] = useState(false)
+  const [fiftyTnx, setfiftyTnx] = useState(false)
+  const [hundredTnx, sethundredTnx] = useState(false)
+  const [hyperSwap, sethyperSwap] = useState(false)
+  const [liquidLaunch, setliquidLaunch] = useState(false)
+  const [tenThn, settenThn] = useState(false)
+
+  const [fiftyThn, setfiftyThn] = useState(false)
 
 
   useEffect(() => {
-  
-})
+
+
+    fetchData();
+
+  }, [isConnected, address, walletProvider])
+
+  async function fetchData(): Promise<void> {
+    if (isConnected && address) {
+      try {
+        setLoading(true)
+        await getAllUserTransactionCounts(address)
+        // await getUserHyperSwapVolume(address)
+      } catch (error) {
+        console.error("Error fetching all data:", error);
+      } finally {
+        setLoading(false)
+
+      }
+    }
+
+  }
+
+  async function getAllUserTransactionCounts(address: string) {
+    let newPoint: number = 0;
+    try {
+      const provider = new JsonRpcProvider("https://rpc.hyperliquid.xyz/evm")
+      const txCount = await provider?.getTransactionCount(address);
+      if (txCount >= 100) {
+        newPoint += OverHundredPoint;
+        sethundredTnx(true)
+      } else if (txCount >= 50) {
+        newPoint += OverFiftyPoint;
+        setfiftyTnx(true)
+      } else if (txCount >= 10) {
+        newPoint += OverTenPoint;
+        setTenTnx(true);
+
+      }
+      const finalPoint = point + newPoint
+      setPoint(finalPoint);
+
+    } catch (error) {
+      console.error("Error fetching getAllUserTransactionCounts:", error);
+
+    }
+
+  }
+  async function getAllUserTransactionVolume(address: string): Promise<number> {
+
+    let total = toBigInt(0);
+
+    const provider = new JsonRpcProvider("https://rpc.hyperliquid.xyz/evm")
+
+    const startBlock = 0
+    const endBlock = await provider.getBlockNumber()
+
+
+    // for (let blockNumber = startBlock; blockNumber <= endBlock; blockNumber++) {
+    //   const block = await provider.getTransactionReceipt();
+    //   for (const tx of block.transactions) {
+    //     if (tx.to?.toLowerCase() === address || tx.from.toLowerCase() === address) {
+    //       total = total + (tx.value);
+    //     }
+    //   }
+    // }
+
+    console.log(`Total Volume (sent + received): ${ethers.formatEther(total)} HLP`);
+    return 0;
+
+
+  }
+  async function getUserHyperSwapVolume(address: string): Promise<number> {
+  try {
+    const provider = new JsonRpcProvider("https://rpc.hyperliquid.xyz/evm");
+    const contract = new Contract(RouterAddress, RouterAbi, provider);
+
+    const latestBlock = await provider.getBlockNumber();
+    const chunkSize = 1000;
+    let totalVolume = BigInt(0);
+
+    for (let startBlock = 90000; startBlock <= latestBlock; startBlock += chunkSize + 1) {
+      let endBlock = Math.min(startBlock + chunkSize, latestBlock);
+
+      const filter = contract.filters.Swap(address);
+      const logs = await contract.queryFilter(filter, startBlock, endBlock);
+
+      for (const log of logs) {
+        const parsed = contract.interface.parseLog(log);
+        if (parsed) {
+          const { amount0In, amount1In, amount0Out, amount1Out } = parsed.args;
+          totalVolume += amount0In + amount1In + amount0Out + amount1Out;
+        }
+      }
+    }
+
+    console.log(`Total swap volume: ${formatEther(totalVolume)} ETH-like units`);
+    return parseFloat(formatEther(totalVolume));
+  } catch (error) {
+    console.error("Error calculating volume:", error);
+    return 0;
+  }
+}
+  async function getUserLiquidLaunchVolume(address: string): Promise<number> {
+    return 0;
+
+
+  }
+
+
+
+
   return (
     <>
       <Navbar />
@@ -71,7 +209,7 @@ export default function Home() {
             <h2 className="text-2xl font-extrabold lg:ml-4">Unlock Your CAPY Rewards!</h2>
 
             <p className="text-[12px] mt-2  lg:ml-4">
-             Access your eligibility and claim your share of CAPY tokens. Invite active users and maximize your rewards. Don't miss out—start now and see what awaits you!
+              Access your eligibility and claim your share of CAPY tokens. Invite active users and maximize your rewards. Don't miss out—start now and see what awaits you!
             </p>
 
             <div className="flex justify-between mt-10 mb-5 lg:mb-0  lg:ml-4">
@@ -105,126 +243,143 @@ export default function Home() {
 
         {isConnected ? <>
 
-        {point > 0 ? <>
+          {loading ? <>
 
-        <div className="content mt-10">
-            <div className="flex justify-between w-full gap-3 lg:flex-nowrap flex-wrap">
-              <div className="w-full">
-                <h2 className="text-xl font-extrabold">Wallet  Connected!!!!</h2>
-                <p className="mt-3 text-[10px]">
-                  Great news! We found your account eligible, and you’re eligible to claim your reward🎉🎉🎉.
-                </p>
+            <LoadingSpinner />
+
+          </> : <>
+
+            {point > 0 ? <>
+
+              <div className="content mt-10">
+                <div className="flex justify-between w-full gap-3 lg:flex-nowrap flex-wrap">
+                  <div className="w-full">
+                    <h2 className="text-xl font-extrabold">Wallet  Connected!!!!</h2>
+                    <p className="mt-3 text-[10px]">
+                      Great news! We found your account eligible, and you’re eligible to claim your reward🎉🎉🎉.
+                    </p>
+                  </div>
+
+                  <div className="w-full">
+                    <p className="text-sm">Refer a Friend to earn more point</p>
+                    <div className="border border-[#19EF9D] rounded-3xl p-2 flex justify-between mt-3">
+                      <p className="text-[10px] mt-1">Capyuser/{address?.substring(0, 5) + `...` + address?.substring(37, address.length)}</p>
+
+                      <div className="rounded-3xl bg-[#006216] p-1 px-3 flex justify-center gap-1 cursor-pointer">
+                        <p className="text-[10px]">Copy</p>
+                        <CopyIcon width={10} height={10} />
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+
               </div>
 
-              <div className="w-full">
-                <p className="text-sm">Refer a Friend to earn more point</p>
-                <div className="border border-[#19EF9D] rounded-3xl p-2 flex justify-between mt-3">
-                  <p className="text-[10px] mt-1">Capyuser/{address?.substring(0, 5) + `...` + address?.substring(37, address.length)}</p>
+              <div className="py-5 flex justify-between lg:flex-nowrap flex-wrap gap-3">
+                <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl" >
 
-                  <div className="rounded-3xl bg-[#006216] p-1 px-3 flex justify-center gap-1 cursor-pointer">
-                    <p className="text-[10px]">Copy</p>
-                    <CopyIcon width={10} height={10} />
+                  <h3 className="">Total $Capy To Claim :</h3>
+
+                  <h1 className="mt-10 font-extrabold text-2xl">{formatNumber(point)}</h1>
+
+
+                  <p className="mt-10 text-[8px]">You'll need to sign 1 chunks of transactions.</p>
+
+                </div>
+                <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl" >
+                  <h3>Eligibility:</h3>
+
+                  <div className="text-[10px] mt-2">
+                    <ol className="list-decimal list-inside">
+                      {tenTnx ? <li >  Conduct more than 10 transactions.
+                      </li> : <li className="text-gray-600">  Conduct more than 10 transactions.
+                      </li>}
+
+                      {fiftyTnx ? <li >Conduct more than 50 transactions.</li> : <li className="text-gray-600">Conduct more than 50 transactions.</li>}
+
+                      {hundredTnx ? <li >Conduct more than 100 transactions.</li> : <li className="text-gray-600">Conduct more than 100 transactions.</li>}
+
+
+                      {hyperSwap ?
+                        <li >Conduct Over $5,000 Volume on HyperSwap</li>
+                        :
+                        <li className="text-gray-600" >Conduct Over $5,000 Volume on HyperSwap</li>
+
+                      }
+                      {liquidLaunch ? <li >Conduct Over $5,000 Volume on LiquidLaunch</li> : <li className="text-gray-600" >Conduct Over $5,000 Volume on LiquidLaunch</li>}
+                      {tenThn ? <li >Conduct Transaction exceeding $10,000</li> : <li className="text-gray-600">Conduct Transaction exceeding $10,000</li>}
+                      {fiftyThn ? <li>Conduct Transaction exceeding $50,000</li> : <li className="text-gray-600">Conduct Transaction exceeding $50,000</li>}
+
+                    </ol>
                   </div>
 
                 </div>
               </div>
-            </div>
 
-          </div>
+            </> : <>
 
-          <div className="py-5 flex justify-between lg:flex-nowrap flex-wrap gap-3">
-            <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl" >
+              <div className="content mt-10">
+                <div className="flex justify-between w-full gap-3 lg:flex-nowrap flex-wrap">
+                  <div className="w-full">
+                    <h2 className="text-xl font-extrabold">Wallet  Connected!!!!</h2>
+                    <p className="mt-3 text-[10px]">
+                      Sorry!!! You are not Eligible.
+                    </p>
+                  </div>
 
-              <h3 className="">Total $Capy To Claim :</h3>
+                  <div className="w-full">
+                    <p className="text-sm">Refer a Friend to earn more point</p>
+                    <div className="border border-[#19EF9D] rounded-3xl p-2 flex justify-between mt-3">
+                      <p className="text-[10px] mt-1">Capyuser/{address?.substring(0, 5) + `...` + address?.substring(37, address.length)}</p>
 
-              <h1 className="mt-10 font-extrabold text-2xl">{formatNumber(point)}</h1>
+                      <div className="rounded-3xl bg-[#006216] p-1 px-3 flex justify-center gap-1 cursor-pointer">
+                        <p className="text-[10px]">Copy</p>
+                        <CopyIcon width={10} height={10} />
+                      </div>
 
+                    </div>
+                  </div>
+                </div>
 
-              <p className="mt-10 text-[8px]">You'll need to sign 1 chunks of transactions.</p>
-
-            </div>
-            <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl" >
-              <h3>Eligibility:</h3>
-
-              <div className="text-[10px] mt-2">
-                       <ol className="list-decimal list-inside">
-                  <li >  Conduct more than 10 transactions.
-                  </li>
-
-                  <li >Conduct more than 50 transactions.</li>
-                  <li >Conduct more than 100 transactions.</li>
-                  <li >Conduct Over $5,000 Volume on HyperSwap</li>
-                  <li >Conduct Over $5,000 Volume on LiquidLaunch</li>
-                  <li >Conduct Transaction exceeding $10,000</li>
-                  <li>Conduct Transaction exceeding $50,000</li>
-
-                </ol>
               </div>
 
-            </div>
-          </div>
-        
-        </> : <>
+              <div className="py-5 flex justify-between lg:flex-nowrap flex-wrap gap-3">
+                <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl" >
 
-        <div className="content mt-10">
-            <div className="flex justify-between w-full gap-3 lg:flex-nowrap flex-wrap">
-              <div className="w-full">
-                <h2 className="text-xl font-extrabold">Wallet  Connected!!!!</h2>
-                <p className="mt-3 text-[10px]">
-                  Sorry!!! You are not Eligible.
-                </p>
-              </div>
+                  <h3 className="">Total $Capy To Claim :</h3>
 
-              <div className="w-full">
-                <p className="text-sm">Refer a Friend to earn more point</p>
-                <div className="border border-[#19EF9D] rounded-3xl p-2 flex justify-between mt-3">
-                  <p className="text-[10px] mt-1">Capyuser/{address?.substring(0, 5) + `...` + address?.substring(37, address.length)}</p>
+                  <h1 className="mt-10 font-extrabold text-2xl">{formatNumber(point)}</h1>
 
-                  <div className="rounded-3xl bg-[#006216] p-1 px-3 flex justify-center gap-1 cursor-pointer">
-                    <p className="text-[10px]">Copy</p>
-                    <CopyIcon width={10} height={10} />
+
+                  <p className="mt-10 text-[8px]">You are not eligible.</p>
+
+                </div>
+                <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl" >
+                  <h3>Eligibility:</h3>
+
+                  <div className="text-[10px] mt-2">
+                    <ol className="list-decimal list-inside">
+                      <li className="text-gray-600">  Conduct more than 10 transactions.
+                      </li>
+
+                      <li className="text-gray-600">Conduct more than 50 transactions.</li>
+                      <li className="text-gray-600">Conduct more than 100 transactions.</li>
+                      <li className="text-gray-600">Conduct Over $5,000 Volume on HyperSwap</li>
+                      <li className="text-gray-600">Conduct Over $5,000 Volume on LiquidLaunch</li>
+                      <li className="text-gray-600">Conduct Transaction exceeding $10,000</li>
+                      <li className="text-gray-600">Conduct Transaction exceeding $50,000</li>
+
+                    </ol>
                   </div>
 
                 </div>
               </div>
-            </div>
 
-          </div>
+            </>}
 
-          <div className="py-5 flex justify-between lg:flex-nowrap flex-wrap gap-3">
-            <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl" >
+          </>}
 
-              <h3 className="">Total $Capy To Claim :</h3>
-
-              <h1 className="mt-10 font-extrabold text-2xl">{formatNumber(point)}</h1>
-
-
-              <p className="mt-10 text-[8px]">You are not eligible.</p>
-
-            </div>
-            <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl" >
-              <h3>Eligibility:</h3>
-
-              <div className="text-[10px] mt-2">
-                <ol className="list-decimal list-inside">
-                  <li className="text-gray-600">  Conduct more than 10 transactions.
-                  </li>
-
-                  <li className="text-gray-600">Conduct more than 50 transactions.</li>
-                  <li className="text-gray-600">Conduct more than 100 transactions.</li>
-                  <li className="text-gray-600">Conduct Over $5,000 Volume on HyperSwap</li>
-                  <li className="text-gray-600">Conduct Over $5,000 Volume on LiquidLaunch</li>
-                  <li className="text-gray-600">Conduct Transaction exceeding $10,000</li>
-                  <li className="text-gray-600">Conduct Transaction exceeding $50,000</li>
-
-                </ol>
-              </div>
-
-            </div>
-          </div>
-        
-        </> }
-          
 
           <div className="text-center py-5">
             <p>Countdown</p>
@@ -256,7 +411,7 @@ export default function Home() {
               alt="Next.js logo"
               width={20}
               height={20}
-              
+
 
             />
             <Image
