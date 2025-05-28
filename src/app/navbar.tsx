@@ -3,7 +3,7 @@ import React from 'react'
 import { useWallet } from './context/WalletContext';
 
 
- const ConnectWalletButton: React.FC = () => {
+const ConnectWalletButton: React.FC = () => {
     const { isConnected, connectWallet } = useWallet();
 
     return (
@@ -23,7 +23,15 @@ const Navbar = () => {
     return (
         <div className="flex justify-between">
             <div>
-                <h2>LOGO</h2>
+                <video
+                    src="/images/dance.mp4"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    style={{ width: '30px', height: '30px' }}
+                />
+
             </div>
 
             <ConnectWalletButton />

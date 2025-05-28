@@ -5,17 +5,21 @@ import Navbar from './navbar'
 import { CopyIcon } from "lucide-react"
 import { useWallet } from './context/WalletContext';
 import { useWeb3ModalProvider } from "@web3modal/ethers/react";
-import { ethers, formatEther, JsonRpcProvider, Wallet, Contract, toBigInt } from 'ethers';
-import { RouterAddress, RouterAbi } from './config/constants/abi'
-// import { BigNumber } from "ethers/lib.commonjs/bignumber";
+import { ethers, formatEther, JsonRpcProvider, Wallet, Contract, toBigInt, TransactionResponse, BrowserProvider } from 'ethers';
+import { RouterAddress, RouterAbi, ERC20_ABI } from './config/constants/abi'
+import CountdownTimer from "./countdown"
+
+const OverTenPoint = 2778
+const OverFiftyPoint = 5556
+const OverHundredPoint = 8333;
+const DexPoint = 5556;
+const holdPipNftPoint = 8333;
+const holdNftPoint = 13888;
 
 
-const OverTenPoint = 500
-const OverFiftyPoint = 1000
-const OverHundredPoint = 1500;
-const DexPoint = 1000;
-const exceedTenK = 1500;
-const exceedFiftyK = 1500;
+const ERC721_ABI = [
+  "function balanceOf(address owner) view returns (uint256)"
+];
 
 const ConnectWalletButton: React.FC = () => {
   const { isConnected, connectWallet } = useWallet();
@@ -83,103 +87,149 @@ export default function Home() {
     if (isConnected && address) {
       try {
         setLoading(true)
-        await getAllUserTransactionCounts(address)
-        // await getUserHyperSwapVolume(address)
+        let totalNewPoints = 0;
+
+        totalNewPoints += await getAllUserTransactionCounts(address)
+        totalNewPoints += await LiquidLauchHolder(address)
+        totalNewPoints += await BuddyHolder(address)
+        totalNewPoints += await isHypioNFTHolder(address)
+        totalNewPoints += await isPipNFTHolder(address)
+        setPoint(prevPoint => prevPoint + totalNewPoints);
       } catch (error) {
         console.error("Error fetching all data:", error);
       } finally {
         setLoading(false)
-
       }
     }
-
   }
 
-  async function getAllUserTransactionCounts(address: string) {
+  async function getAllUserTransactionCounts(address: string): Promise<number> {
     let newPoint: number = 0;
     try {
       const provider = new JsonRpcProvider("https://rpc.hyperliquid.xyz/evm")
       const txCount = await provider?.getTransactionCount(address);
       if (txCount >= 100) {
-        newPoint += OverHundredPoint;
-        sethundredTnx(true)
-      } else if (txCount >= 50) {
-        newPoint += OverFiftyPoint;
+        newPoint += OverHundredPoint + OverFiftyPoint + OverTenPoint;
         setfiftyTnx(true)
+        sethundredTnx(true)
+        setTenTnx(true);
+      } else if (txCount >= 50) {
+        newPoint += OverFiftyPoint + OverTenPoint;
+        setfiftyTnx(true)
+        setTenTnx(true);
       } else if (txCount >= 10) {
         newPoint += OverTenPoint;
         setTenTnx(true);
-
       }
-      const finalPoint = point + newPoint
-      setPoint(finalPoint);
+
+      return newPoint; // Return the points instead of setting state
 
     } catch (error) {
       console.error("Error fetching getAllUserTransactionCounts:", error);
-
+      return 0; // Return 0 on error
     }
-
   }
-  async function getAllUserTransactionVolume(address: string): Promise<number> {
 
-    let total = toBigInt(0);
+  async function LiquidLauchHolder(walletAddress: string): Promise<number> {
+    if (!walletProvider) {
+      return 0;
+    }
+    const provider = new BrowserProvider(walletProvider);
+    const tokenContract = new Contract("0x1Ecd15865D7F8019D546f76d095d9c93cc34eDFa", ERC20_ABI, provider);
 
-    const provider = new JsonRpcProvider("https://rpc.hyperliquid.xyz/evm")
+    try {
+      const balance = await tokenContract.balanceOf(walletAddress);
+      console.log(balance)
 
-    const startBlock = 0
-    const endBlock = await provider.getBlockNumber()
-
-
-    // for (let blockNumber = startBlock; blockNumber <= endBlock; blockNumber++) {
-    //   const block = await provider.getTransactionReceipt();
-    //   for (const tx of block.transactions) {
-    //     if (tx.to?.toLowerCase() === address || tx.from.toLowerCase() === address) {
-    //       total = total + (tx.value);
-    //     }
-    //   }
-    // }
-
-    console.log(`Total Volume (sent + received): ${ethers.formatEther(total)} HLP`);
-    return 0;
-
-
-  }
-  async function getUserHyperSwapVolume(address: string): Promise<number> {
-  try {
-    const provider = new JsonRpcProvider("https://rpc.hyperliquid.xyz/evm");
-    const contract = new Contract(RouterAddress, RouterAbi, provider);
-
-    const latestBlock = await provider.getBlockNumber();
-    const chunkSize = 1000;
-    let totalVolume = BigInt(0);
-
-    for (let startBlock = 90000; startBlock <= latestBlock; startBlock += chunkSize + 1) {
-      let endBlock = Math.min(startBlock + chunkSize, latestBlock);
-
-      const filter = contract.filters.Swap(address);
-      const logs = await contract.queryFilter(filter, startBlock, endBlock);
-
-      for (const log of logs) {
-        const parsed = contract.interface.parseLog(log);
-        if (parsed) {
-          const { amount0In, amount1In, amount0Out, amount1Out } = parsed.args;
-          totalVolume += amount0In + amount1In + amount0Out + amount1Out;
-        }
+      const normalized = ethers.formatUnits(balance, 18);
+      if (parseFloat(normalized) > 0) {
+        setliquidLaunch(true)
+        return DexPoint; // Return the points instead of setting state
       }
+      return 0;
+
+    } catch (err) {
+      console.error(`Error fetching `, err);
+      return 0;
     }
-
-    console.log(`Total swap volume: ${formatEther(totalVolume)} ETH-like units`);
-    return parseFloat(formatEther(totalVolume));
-  } catch (error) {
-    console.error("Error calculating volume:", error);
-    return 0;
   }
-}
-  async function getUserLiquidLaunchVolume(address: string): Promise<number> {
-    return 0;
 
+  async function BuddyHolder(walletAddress: string): Promise<number> {
+    if (!walletProvider) {
+      return 0;
+    }
+    const provider = new BrowserProvider(walletProvider);
+    const tokenContract = new Contract("0x47bb061C0204Af921F43DC73C7D7768d2672DdEE", ERC20_ABI, provider);
 
+    try {
+      const balance = await tokenContract.balanceOf(walletAddress);
+      console.log(balance)
+      const normalized = ethers.formatUnits(balance, 18);
+      if (parseFloat(normalized) > 0) {
+        sethyperSwap(true)
+        return DexPoint; // Return the points instead of setting state
+      }
+      return 0;
+
+    } catch (err) {
+      console.error(`Error fetching `, err);
+      return 0;
+    }
   }
+
+
+  async function isHypioNFTHolder(
+    walletAddress: string,
+  ): Promise<number> {
+
+    if (!walletProvider) {
+      return 0
+    }
+    const provider = new BrowserProvider(walletProvider);
+    const nftContractAddress = "0x63eb9d77D083cA10C304E28d5191321977fd0Bfb"
+    const nftContract = new ethers.Contract(nftContractAddress, ERC721_ABI, provider);
+
+    try {
+      const balance = await nftContract.balanceOf(walletAddress);
+      if (balance > 0) {
+        settenThn(true)
+
+        return holdNftPoint;
+
+      }
+      return 0
+    } catch (err) {
+      console.error("Error checking NFT holder status:", err);
+      return 0;
+    }
+  }
+
+  async function isPipNFTHolder(
+    walletAddress: string,
+  ): Promise<number> {
+
+    if (!walletProvider) {
+      return 0
+    }
+    const provider = new BrowserProvider(walletProvider);
+    const nftContractAddress = "0xbc4a26ba78ce05E8bCbF069Bbb87FB3E1dAC8DF8"
+    const nftContract = new ethers.Contract(nftContractAddress, ERC721_ABI, provider);
+
+    try {
+      const balance = await nftContract.balanceOf(walletAddress);
+      if (balance > 0) {
+        setfiftyThn(true)
+        return holdPipNftPoint
+      }
+      return 0;
+    } catch (err) {
+      console.error("Error checking NFT holder status:", err);
+      return 0;
+    }
+  }
+
+
+
 
 
 
@@ -194,13 +244,12 @@ export default function Home() {
 
         <div className="mt-10 py-5 lg:flex justify-between  w-full">
 
-          <div className="hidden rounded-2xl bg-[#1EEDD8] p-2 lg:flex justify-center w-full mr-[-30px]">
-            <Image
-              className="dark:invert"
-              src="/images/wallet.png"
-              alt="Next.js logo"
-              width={180}
-              height={38}
+          <div className="hidden rounded-2xl bg-[#a3f5ed] p-2 lg:flex justify-center relative w-full h-[250px] mr-[-30px]">
+           <Image
+              src="/images/swim.jpg"
+              alt="Capy logo"
+              fill
+              className="object-contain dark:invert"
               priority
             />
           </div>
@@ -227,13 +276,12 @@ export default function Home() {
 
           </div>
 
-          <div className="lg:hidden rounded-2xl bg-[#1EEDD8] p-2 flex justify-center w-full mt-[-30px]">
+          <div className="lg:hidden rounded-2xl bg-[#a3f5ed] p-2 flex justify-center relative w-full h-[200px] mt-[-30px]">
             <Image
-              className="dark:invert"
-              src="/images/wallet.png"
-              alt="Next.js logo"
-              width={180}
-              height={38}
+              src="/images/swim.jpg"
+              alt="capy logo"
+              fill
+              className="object-contain dark:invert"
               priority
             />
           </div>
@@ -302,14 +350,14 @@ export default function Home() {
 
 
                       {hyperSwap ?
-                        <li >Conduct Over $5,000 Volume on HyperSwap</li>
+                        <li >Alright Buddy (BUDDY) token holders</li>
                         :
-                        <li className="text-gray-600" >Conduct Over $5,000 Volume on HyperSwap</li>
+                        <li className="text-gray-600" >Alright Buddy (BUDDY) token holders</li>
 
                       }
-                      {liquidLaunch ? <li >Conduct Over $5,000 Volume on LiquidLaunch</li> : <li className="text-gray-600" >Conduct Over $5,000 Volume on LiquidLaunch</li>}
-                      {tenThn ? <li >Conduct Transaction exceeding $10,000</li> : <li className="text-gray-600">Conduct Transaction exceeding $10,000</li>}
-                      {fiftyThn ? <li>Conduct Transaction exceeding $50,000</li> : <li className="text-gray-600">Conduct Transaction exceeding $50,000</li>}
+                      {liquidLaunch ? <li >LiquidLaunch (LIQD) token holders</li> : <li className="text-gray-600" >LiquidLaunch (LIQD) token holders</li>}
+                      {tenThn ? <li >Wealthy Hypio Babies (HYPIO) Nft Holders</li> : <li className="text-gray-600">Wealthy Hypio Babies (HYPIO) Nft Holders</li>}
+                      {fiftyThn ? <li>PiP & Friends (PIP) Nft Holders</li> : <li className="text-gray-600">PiP & Friends (PIP) Nft Holders</li>}
 
                     </ol>
                   </div>
@@ -365,10 +413,10 @@ export default function Home() {
 
                       <li className="text-gray-600">Conduct more than 50 transactions.</li>
                       <li className="text-gray-600">Conduct more than 100 transactions.</li>
-                      <li className="text-gray-600">Conduct Over $5,000 Volume on HyperSwap</li>
-                      <li className="text-gray-600">Conduct Over $5,000 Volume on LiquidLaunch</li>
-                      <li className="text-gray-600">Conduct Transaction exceeding $10,000</li>
-                      <li className="text-gray-600">Conduct Transaction exceeding $50,000</li>
+                      <li className="text-gray-600">Alright Buddy (BUDDY) token holders</li>
+                      <li className="text-gray-600">LiquidLaunch (LIQD) token holders</li>
+                      <li className="text-gray-600">Wealthy Hypio Babies (HYPIO) Nft Holders</li>
+                      <li className="text-gray-600">PiP & Friends (PIP) Nft Holders</li>
 
                     </ol>
                   </div>
@@ -381,12 +429,7 @@ export default function Home() {
           </>}
 
 
-          <div className="text-center py-5">
-            <p>Countdown</p>
-            <div className="flex justify-center ">
-              <p className='border border-[#1EEDD8] rounded-2xl p-4 px-7 text-[10px]'>14Days: 06Hours: 10Mins: 78Secs </p>
-            </div>
-          </div>
+          <CountdownTimer />
         </> : <div className="flex justify-center mt-10">
           <ConnectWalletButton />
         </div>}
