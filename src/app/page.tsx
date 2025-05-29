@@ -43,13 +43,14 @@ const ConnectWalletButton: React.FC = () => {
 
 
 function formatNumber(value: number): string {
+  if (value === null) return '0'
   if (value >= 1000) {
     return new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
     }).format(value);
   } else {
-    return value.toFixed(2);
+    return value.toFixed(1);
   }
 }
 
@@ -71,6 +72,10 @@ export default function Home() {
   const [point, setPoint] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [Lloading, setLLoading] = useState(true);
+  const [error, setError] = useState('');
+
   const [userVolume, setUserVolume] = useState(0)
   const [capyVolume, setCapyVolume] = useState(0)
 
@@ -84,6 +89,13 @@ export default function Home() {
   const [fiftyThn, setfiftyThn] = useState(false)
 
   const [referral, setRefAddress] = useState("")
+
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 10;
+
+  const startIndex = currentPage * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, leaderboard.length);
+  const currentData = leaderboard.slice(startIndex, endIndex);
 
 
 
@@ -99,6 +111,31 @@ export default function Home() {
   useEffect(() => {
     fetchMata()
   })
+
+
+
+  useEffect(() => {
+    fetchLeaderboard();
+  }, []);
+
+  const fetchLeaderboard = async () => {
+    try {
+      setLLoading(true);
+      const response = await axios.get('leaderBoard');
+      const data = await response.data;
+
+      if (response.status === 200) {
+        setLeaderboard(data.leaderboard || []);
+      } else {
+        setError(data.message || 'Failed to fetch leaderboard');
+      }
+    } catch (err) {
+      setError('Error fetching leaderboard');
+      console.error('Leaderboard fetch error:', err);
+    } finally {
+      setLLoading(false);
+    }
+  };
 
   async function fetchMata(): Promise<void> {
     const res = await axios.get("/data");
@@ -298,7 +335,37 @@ export default function Home() {
   }
 
 
+  const getRankIcon = (index: any) => {
+    switch (index) {
+      case 0:
+        return <span className="text-xl lg:text-2xl">🥇</span>;
+      case 1:
+        return <span className="text-xl lg:text-2xl">🥈</span>;
+      case 2:
+        return <span className="text-xl lg:text-2xl">🥉</span>;
+      default:
+        return <span className="text-lg font-bold text-gray-600">#{index + 1}</span>;
+    }
+  };
 
+  const getRankStyle = (index: any) => {
+    switch (index) {
+      case 0:
+        return 'bg-gradient-to-r from-yellow-400 to-yellow-600 text-white shadow-lg transform scale-105';
+      case 1:
+        return 'bg-gradient-to-r from-gray-300 to-gray-500 text-white shadow-md';
+      case 2:
+        return 'bg-gradient-to-r from-orange-400 to-orange-600 text-white shadow-md';
+      default:
+        return 'bg-white hover:bg-gray-50 border border-gray-200';
+    }
+  };
+
+
+  function truncateWallet(wallet: any) {
+    if (!wallet) return '';
+    return `${wallet.slice(0, 6)}...${wallet.slice(-4)}`;
+  }
 
 
 
@@ -508,6 +575,92 @@ export default function Home() {
         </div>}
 
 
+
+
+        {Lloading ? (
+          <div className="py-5 mt-10">
+            <h2 className="text-xl lg:text-2xl font-bold text-start mb-8 text-gray-800">🏆 Leader Board</h2>
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-700"></div>
+              <span className="ml-3 text-gray-600">Loading leaderboard...</span>
+            </div>
+          </div>
+        ) : (
+          <div className="py-5 max-w-4xl mx-auto px-4 mt-10">
+            <h2 className="text-xl lg:text-2xl font-bold text-start mb-8 text-gray-800">
+              🏆 Leader Board
+            </h2>
+
+            {leaderboard.length === 0 ? (
+              <div className="text-center py-12 text-gray-500">
+                <div className="text-3xl mb-4">📊</div>
+                <p className="text-lg">No users found yet</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {currentData.map((user: any, index) => {
+                  const globalIndex = startIndex + index;
+                  return (
+                    <div
+                      key={user?.wallet}
+                      className={`
+                      flex items-center justify-between p-2 rounded-lg transition-all duration-300
+                      ${getRankStyle(globalIndex)}
+                    `}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <div className="flex-shrink-0 w-12 text-center">
+                          {getRankIcon(globalIndex)}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="text-[10px] lg:text-sm font-medium text-gray-500 uppercase tracking-wide">
+                            Wallet
+                          </div>
+                          <div className={`font-mono text-[10px] lg:text-sm ${globalIndex < 3 ? 'text-white' : 'text-gray-900'}`}>
+                            {truncateWallet(user.wallet)}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="text-right">
+                        <div className="text-[10px] lg:text-sm font-medium text-gray-500 uppercase tracking-wide">
+                          {globalIndex < 3 ? (
+                            <span className="text-gray-200">Points</span>
+                          ) : (
+                            'Points'
+                          )}
+                        </div>
+                        <div className={`text-xl lg:text-2xl font-bold ${globalIndex < 3 ? 'text-white' : 'text-gray-900'}`}>
+                          {formatNumber(user?.totalPoints)}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {leaderboard.length > 0 && (
+              <div className="text-center mt-5 space-x-4">
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+                  disabled
+                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold text-[10px] py-1 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50"
+                >
+                  ◀ Prev
+                </button>
+                <button
+                  onClick={() => setCurrentPage((prev) => (prev + 1) * itemsPerPage < leaderboard.length ? prev + 1 : prev)}
+                  disabled={(currentPage + 1) * itemsPerPage >= leaderboard.length}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold text-[10px] py-1 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50"
+                >
+                  Next ▶
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
 
 
