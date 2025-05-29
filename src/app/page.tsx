@@ -5,9 +5,12 @@ import Navbar from './navbar'
 import { CopyIcon } from "lucide-react"
 import { useWallet } from './context/WalletContext';
 import { useWeb3ModalProvider } from "@web3modal/ethers/react";
-import { ethers, formatEther, JsonRpcProvider, Wallet, Contract, toBigInt, TransactionResponse, BrowserProvider } from 'ethers';
-import { RouterAddress, RouterAbi, ERC20_ABI } from './config/constants/abi'
+import { ethers, JsonRpcProvider, Contract, BrowserProvider } from 'ethers';
+import { ERC20_ABI } from './config/constants/abi'
 import CountdownTimer from "./countdown"
+import axios from "./api/axios";
+import { useSearchParams } from 'next/navigation';
+
 
 const OverTenPoint = 2778
 const OverFiftyPoint = 5556
@@ -62,9 +65,14 @@ const LoadingSpinner: React.FC = () => (
 export default function Home() {
   const { isConnected, address } = useWallet();
   const { walletProvider } = useWeb3ModalProvider();
+  const searchParams = useSearchParams();
+
 
   const [point, setPoint] = useState(0);
   const [loading, setLoading] = useState(true);
+
+  const [userVolume, setUserVolume] = useState(0)
+  const [capyVolume, setCapyVolume] = useState(0)
 
   const [tenTnx, setTenTnx] = useState(false)
   const [fiftyTnx, setfiftyTnx] = useState(false)
@@ -75,12 +83,36 @@ export default function Home() {
 
   const [fiftyThn, setfiftyThn] = useState(false)
 
+  const [referral, setRefAddress] = useState("")
+
+
 
   useEffect(() => {
+    // Get the ref parameter from the URL when component mounts
+    const ref = searchParams.get('ref');
+
+    if (ref) {
+      setRefAddress(String(ref));
+
+    }
+  }, [searchParams]);
+  useEffect(() => {
+    fetchMata()
+  })
+
+  async function fetchMata(): Promise<void> {
+    const res = await axios.get("/data");
+    if (res.status === 200) {
+      const data = res.data;
+      setUserVolume(data.totalUsers)
+      setCapyVolume(data.totalPoints)
+    }
+
+  }
 
 
+  useEffect(() => {
     fetchData();
-
   }, [isConnected, address, walletProvider])
 
   async function fetchData(): Promise<void> {
@@ -94,6 +126,7 @@ export default function Home() {
         totalNewPoints += await BuddyHolder(address)
         totalNewPoints += await isHypioNFTHolder(address)
         totalNewPoints += await isPipNFTHolder(address)
+        totalNewPoints += await userDatabase(address, totalNewPoints);
         setPoint(prevPoint => prevPoint + totalNewPoints);
       } catch (error) {
         console.error("Error fetching all data:", error);
@@ -101,6 +134,42 @@ export default function Home() {
         setLoading(false)
       }
     }
+  }
+
+  async function userDatabase(address: string, totalPoint: number): Promise<number> {
+
+    if (totalPoint <= 0) {
+      return 0
+    }
+    try {
+      const data = {
+        wallet: address,
+        refAddress: referral,
+        point: totalPoint
+      }
+      const res = await axios.post("/user", data);
+
+      if (res.status === 200) {
+        const resData = res.data;
+        const referalPoint = resData.refPoint;
+        const total = resData.point
+        console.log(total)
+        return referalPoint;
+
+      } else if (res.status === 201) {
+        const resData = res.data;
+        const referalPoint = resData.refPoint;
+        return referalPoint;
+      }
+
+    } catch (err) {
+      console.log(err);
+
+
+    }
+
+    return 0
+
   }
 
   async function getAllUserTransactionCounts(address: string): Promise<number> {
@@ -240,16 +309,14 @@ export default function Home() {
 
       <main>
 
-
-
         <div className="mt-10 py-5 lg:flex justify-between  w-full">
 
           <div className="hidden rounded-2xl bg-[#a3f5ed] p-2 lg:flex justify-center relative w-full h-[250px] mr-[-30px]">
-           <Image
+            <Image
               src="/images/swim.jpg"
               alt="Capy logo"
               fill
-              className="object-contain dark:invert"
+              className="object-contain"
               priority
             />
           </div>
@@ -264,12 +331,12 @@ export default function Home() {
             <div className="flex justify-between mt-10 mb-5 lg:mb-0  lg:ml-4">
               <div>
                 <p className="text-[10px]">Total Capy Accumulated</p>
-                <h3 className="text-2xl font-extrabold">7,564,456</h3>
+                <h3 className="text-2xl font-extrabold">{formatNumber(capyVolume)}</h3>
               </div>
 
               <div>
                 <p className="text-[10px]">Users Volume</p>
-                <h3 className="text-2xl font-extrabold">19,638</h3>
+                <h3 className="text-2xl font-extrabold">{formatNumber(userVolume)}</h3>
               </div>
 
             </div>
@@ -281,7 +348,7 @@ export default function Home() {
               src="/images/swim.jpg"
               alt="capy logo"
               fill
-              className="object-contain dark:invert"
+              className="object-contain"
               priority
             />
           </div>
@@ -310,14 +377,16 @@ export default function Home() {
 
                   <div className="w-full">
                     <p className="text-sm">Refer a Friend to earn more point</p>
-                    <div className="border border-[#19EF9D] rounded-3xl p-2 flex justify-between mt-3">
-                      <p className="text-[10px] mt-1">Capyuser/{address?.substring(0, 5) + `...` + address?.substring(37, address.length)}</p>
-
-                      <div className="rounded-3xl bg-[#006216] p-1 px-3 flex justify-center gap-1 cursor-pointer">
-                        <p className="text-[10px]">Copy</p>
-                        <CopyIcon width={10} height={10} />
+                    <div className="mt-3 w-[object-fit]">
+                      <div className="border border-[#19EF9D] rounded-3xl p-1 px-3 flex justify-between gap-1 cursor-pointer">
+                        <code className="text-[12px] lg:text-sm">capyhl.fun/?ref={address?.substring(0, 5) + `...` + address?.substring(37, address.length)}</code>
+                        <button
+                          onClick={() => navigator.clipboard.writeText(`http://www.capyhl.fun/?ref=${address}`)}
+                          className="ml-2 bg-gray-500 hover:bg-gray-700 text-white text-[10px] lg:text-sm py-1 px-2 rounded"
+                        >
+                          Copy
+                        </button>
                       </div>
-
                     </div>
                   </div>
                 </div>
@@ -378,16 +447,20 @@ export default function Home() {
 
                   <div className="w-full">
                     <p className="text-sm">Refer a Friend to earn more point</p>
-                    <div className="border border-[#19EF9D] rounded-3xl p-2 flex justify-between mt-3">
-                      <p className="text-[10px] mt-1">Capyuser/{address?.substring(0, 5) + `...` + address?.substring(37, address.length)}</p>
-
-                      <div className="rounded-3xl bg-[#006216] p-1 px-3 flex justify-center gap-1 cursor-pointer">
-                        <p className="text-[10px]">Copy</p>
-                        <CopyIcon width={10} height={10} />
+                    <div className="mt-3 w-[object-fit]">
+                      <div className="border border-[#19EF9D] rounded-3xl p-1 px-3 flex justify-between gap-1 cursor-pointer">
+                        <code className="text-[12px] lg:text-sm">capyhl.fun/?ref={address?.substring(0, 5) + `...` + address?.substring(37, address.length)}</code>
+                        <button
+                          onClick={() => navigator.clipboard.writeText(`http://www.capyhl.fun/?ref=${address}`)}
+                          className="ml-2 bg-gray-500 hover:bg-gray-700 text-white text-[10px] lg:text-sm py-1 px-2 rounded"
+                        >
+                          Copy
+                        </button>
                       </div>
-
                     </div>
                   </div>
+
+
                 </div>
 
               </div>
@@ -449,7 +522,6 @@ export default function Home() {
 
           <div className="flex justify-center mt-2">
             <Image
-              className="dark:invert"
               src="/images/discord.png"
               alt="Next.js logo"
               width={20}
@@ -458,14 +530,12 @@ export default function Home() {
 
             />
             <Image
-              className="dark:invert"
               src="/images/youtube.png"
               alt="Next.js logo"
               width={20}
               height={20}
 
             /> <Image
-              className="dark:invert"
               src="/images/instagram.png"
               alt="Next.js logo"
               width={20}
@@ -498,7 +568,6 @@ export default function Home() {
 
           <div className="flex justify-center">
             <Image
-              className="dark:invert"
               src="/images/discord.png"
               alt="Next.js logo"
               width={20}
@@ -506,14 +575,12 @@ export default function Home() {
 
             />
             <Image
-              className="dark:invert"
               src="/images/youtube.png"
               alt="Next.js logo"
               width={20}
               height={20}
 
             /> <Image
-              className="dark:invert"
               src="/images/instagram.png"
               alt="Next.js logo"
               width={20}
