@@ -186,7 +186,7 @@ async function fetchData(): Promise<void> {
     if (error.code === 'NETWORK_ERROR') {
       console.error('Network connection issue');
     }
-      setError('Network connection issue')
+      setError('Network connection issue, Please Make Sure Your are connected to HyperEvm chain.')
 
   } finally {
     setLoading(false);
