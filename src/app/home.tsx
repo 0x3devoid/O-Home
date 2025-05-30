@@ -5,7 +5,7 @@ import Navbar from './navbar'
 import { CopyIcon } from "lucide-react"
 import { useWallet } from './context/WalletContext';
 import { useWeb3ModalProvider } from "@web3modal/ethers/react";
-import { ethers, JsonRpcProvider, Contract, BrowserProvider } from 'ethers';
+import { ethers, JsonRpcProvider, Contract } from 'ethers';
 import { ERC20_ABI } from './config/constants/abi'
 import CountdownTimer from "./countdown"
 import axios from "./api/axios";
@@ -75,7 +75,7 @@ export default function Home() {
 
   const [leaderboard, setLeaderboard] = useState([]);
   const [Lloading, setLLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   const [userVolume, setUserVolume] = useState(0)
   const [capyVolume, setCapyVolume] = useState(0)
@@ -101,7 +101,6 @@ export default function Home() {
 
 
   useEffect(() => {
-    // Get the ref parameter from the URL when component mounts
     const ref = searchParams.get('ref');
 
     if (ref) {
@@ -127,11 +126,8 @@ export default function Home() {
 
       if (response.status === 200) {
         setLeaderboard(data.leaderboard || []);
-      } else {
-        setError(data.message || 'Failed to fetch leaderboard');
       }
     } catch (err) {
-      setError('Error fetching leaderboard');
       console.error('Leaderboard fetch error:', err);
     } finally {
       setLLoading(false);
@@ -139,12 +135,16 @@ export default function Home() {
   };
 
   async function fetchMata(): Promise<void> {
-    const res = await axios.get("/data");
+  try{
+      const res = await axios.get("/data");
     if (res.status === 200) {
       const data = res.data;
       setUserVolume(data.totalUsers)
       setCapyVolume(data.totalPoints)
     }
+  }catch(error: any){
+    console.log(error)
+  }
 
   }
 
@@ -153,26 +153,45 @@ export default function Home() {
     fetchData();
   }, [isConnected, address, walletProvider])
 
-  async function fetchData(): Promise<void> {
-    if (isConnected && address) {
-      try {
-        setLoading(true)
-        let totalNewPoints = 0;
-
-        totalNewPoints += await getAllUserTransactionCounts(address)
-        totalNewPoints += await LiquidLauchHolder(address)
-        totalNewPoints += await BuddyHolder(address)
-        totalNewPoints += await isHypioNFTHolder(address)
-        totalNewPoints += await isPipNFTHolder(address)
-        totalNewPoints += await userDatabase(address, totalNewPoints);
-        setPoint(prevPoint => prevPoint + totalNewPoints);
-      } catch (error) {
-        console.error("Error fetching all data:", error);
-      } finally {
-        setLoading(false)
-      }
-    }
+async function fetchData(): Promise<void> {
+  if (!isConnected || !address) {
+    return;
   }
+
+ const provider = new JsonRpcProvider("https://rpc.hyperliquid.xyz/evm")
+
+  try {
+  // Check network
+    const network = await provider.getNetwork();
+    const currentChainId = Number(network?.chainId);
+
+
+    console.log(currentChainId)
+
+    setLoading(true);
+    let totalNewPoints = 0;
+
+    totalNewPoints += await getAllUserTransactionCounts(address);
+    totalNewPoints += await LiquidLauchHolder(address);
+    totalNewPoints += await BuddyHolder(address);
+    totalNewPoints += await isHypioNFTHolder(address);
+    totalNewPoints += await isPipNFTHolder(address);
+    totalNewPoints += await userDatabase(address, totalNewPoints);
+    
+    setPoint(prevPoint => prevPoint + totalNewPoints);
+    
+  } catch (error: any) {
+    console.error("Error fetching data:", error);
+    // Handle specific network errors
+    if (error.code === 'NETWORK_ERROR') {
+      console.error('Network connection issue');
+    }
+      setError('Network connection issue')
+
+  } finally {
+    setLoading(false);
+  }
+}
 
   async function userDatabase(address: string, totalPoint: number): Promise<number> {
 
@@ -241,7 +260,7 @@ export default function Home() {
     if (!walletProvider) {
       return 0;
     }
-    const provider = new BrowserProvider(walletProvider);
+   const provider = new JsonRpcProvider("https://rpc.hyperliquid.xyz/evm")
     const tokenContract = new Contract("0x1Ecd15865D7F8019D546f76d095d9c93cc34eDFa", ERC20_ABI, provider);
 
     try {
@@ -265,7 +284,7 @@ export default function Home() {
     if (!walletProvider) {
       return 0;
     }
-    const provider = new BrowserProvider(walletProvider);
+    const provider = new JsonRpcProvider("https://rpc.hyperliquid.xyz/evm")
     const tokenContract = new Contract("0x47bb061C0204Af921F43DC73C7D7768d2672DdEE", ERC20_ABI, provider);
 
     try {
@@ -292,7 +311,7 @@ export default function Home() {
     if (!walletProvider) {
       return 0
     }
-    const provider = new BrowserProvider(walletProvider);
+   const provider = new JsonRpcProvider("https://rpc.hyperliquid.xyz/evm")
     const nftContractAddress = "0x63eb9d77D083cA10C304E28d5191321977fd0Bfb"
     const nftContract = new ethers.Contract(nftContractAddress, ERC721_ABI, provider);
 
@@ -318,7 +337,7 @@ export default function Home() {
     if (!walletProvider) {
       return 0
     }
-    const provider = new BrowserProvider(walletProvider);
+    const provider = new JsonRpcProvider("https://rpc.hyperliquid.xyz/evm")
     const nftContractAddress = "0xbc4a26ba78ce05E8bCbF069Bbb87FB3E1dAC8DF8"
     const nftContract = new ethers.Contract(nftContractAddress, ERC721_ABI, provider);
 
@@ -424,156 +443,187 @@ export default function Home() {
         </div>
 
 
-        {isConnected ? <>
+       {isConnected ? (
+  <>
+    {error ? (
+      // Error State
+      <div className="content mt-10">
+        <div className="flex justify-center">
+          <div className="p-6 bg-red-500 bg-opacity-10 border border-red-500 rounded-2xl max-w-md text-center">
+            <h2 className="text-xl font-extrabold text-red-400 mb-4">Error Occurred</h2>
+            <p className="text-sm text-red-300 mb-4">{error}</p>
+            <button
+              onClick={async() => {
+               await fetchData(); // Retry fetching data
+                setError(null);
+              }}
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    ) : loading ? (
+      // Loading State
+      <LoadingSpinner />
+    ) : (
+      // Success State
+      <>
+        {point > 0 ? (
+          // Eligible User UI
+          <>
+            <div className="content mt-10">
+              <div className="flex justify-between w-full gap-3 lg:flex-nowrap flex-wrap">
+                <div className="w-full">
+                  <h2 className="text-xl font-extrabold">Wallet Connected!!!!</h2>
+                  <p className="mt-3 text-[10px]">
+                    Great news! We found your account eligible, and you're eligible to claim your reward🎉🎉🎉.
+                  </p>
+                </div>
 
-          {loading ? <>
-
-            <LoadingSpinner />
-
-          </> : <>
-
-            {point > 0 ? <>
-
-              <div className="content mt-10">
-                <div className="flex justify-between w-full gap-3 lg:flex-nowrap flex-wrap">
-                  <div className="w-full">
-                    <h2 className="text-xl font-extrabold">Wallet  Connected!!!!</h2>
-                    <p className="mt-3 text-[10px]">
-                      Great news! We found your account eligible, and you’re eligible to claim your reward🎉🎉🎉.
-                    </p>
-                  </div>
-
-                  <div className="w-full">
-                    <p className="text-sm">Refer a Friend to earn more point</p>
-                    <div className="mt-3 w-[object-fit]">
-                      <div className="border border-[#19EF9D] rounded-3xl p-1 px-3 flex justify-between gap-1 cursor-pointer">
-                        <code className="text-[12px] lg:text-sm">capyhl.fun/?ref={address?.substring(0, 5) + `...` + address?.substring(37, address.length)}</code>
-                        <button
-                          onClick={() => navigator.clipboard.writeText(`http://www.capyhl.fun/?ref=${address}`)}
-                          className="ml-2 bg-gray-500 hover:bg-gray-700 text-white text-[10px] lg:text-sm py-1 px-2 rounded"
-                        >
-                          Copy
-                        </button>
-                      </div>
+                <div className="w-full">
+                  <p className="text-sm">Refer a Friend to earn more point</p>
+                  <div className="mt-3 w-[object-fit]">
+                    <div className="border border-[#19EF9D] rounded-3xl p-1 px-3 flex justify-between gap-1 cursor-pointer">
+                      <code className="text-[12px] lg:text-sm">
+                        capyhl.fun/?ref={address?.substring(0, 5) + `...` + address?.substring(37, address.length)}
+                      </code>
+                      <button
+                        onClick={() => navigator.clipboard.writeText(`http://www.capyhl.fun/?ref=${address}`)}
+                        className="ml-2 bg-gray-500 hover:bg-gray-700 text-white text-[10px] lg:text-sm py-1 px-2 rounded flex"
+                      >
+                        Copy <CopyIcon width={10} />
+                      </button>
                     </div>
                   </div>
                 </div>
-
               </div>
+            </div>
 
-              <div className="py-5 flex justify-between lg:flex-nowrap flex-wrap gap-3">
-                <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl" >
-
-                  <h3 className="">Total $Capy To Claim :</h3>
-
-                  <h1 className="mt-10 font-extrabold text-2xl">{formatNumber(point)}</h1>
-
-
-                  <p className="mt-10 text-[8px]">You'll need to sign 1 chunks of transactions.</p>
-
-                </div>
-                <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl" >
-                  <h3>Eligibility:</h3>
-
-                  <div className="text-[10px] mt-2">
-                    <ol className="list-decimal list-inside">
-                      {tenTnx ? <li >  Conduct more than 10 transactions.
-                      </li> : <li className="text-gray-600">  Conduct more than 10 transactions.
-                      </li>}
-
-                      {fiftyTnx ? <li >Conduct more than 50 transactions.</li> : <li className="text-gray-600">Conduct more than 50 transactions.</li>}
-
-                      {hundredTnx ? <li >Conduct more than 100 transactions.</li> : <li className="text-gray-600">Conduct more than 100 transactions.</li>}
-
-
-                      {hyperSwap ?
-                        <li >Alright Buddy (BUDDY) token holders</li>
-                        :
-                        <li className="text-gray-600" >Alright Buddy (BUDDY) token holders</li>
-
-                      }
-                      {liquidLaunch ? <li >LiquidLaunch (LIQD) token holders</li> : <li className="text-gray-600" >LiquidLaunch (LIQD) token holders</li>}
-                      {tenThn ? <li >Wealthy Hypio Babies (HYPIO) Nft Holders</li> : <li className="text-gray-600">Wealthy Hypio Babies (HYPIO) Nft Holders</li>}
-                      {fiftyThn ? <li>PiP & Friends (PIP) Nft Holders</li> : <li className="text-gray-600">PiP & Friends (PIP) Nft Holders</li>}
-
-                    </ol>
-                  </div>
-
-                </div>
+            <div className="py-5 flex justify-between lg:flex-nowrap flex-wrap gap-3">
+              <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl">
+                <h3 className="">Total $Capy To Claim :</h3>
+                <h1 className="mt-10 font-extrabold text-2xl">{formatNumber(point)}</h1>
+                <p className="mt-10 text-[8px]">You'll need to sign 1 chunks of transactions.</p>
               </div>
+              
+              <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl">
+                <h3>Eligibility:</h3>
+                <div className="text-[10px] mt-2">
+                  <ol className="list-decimal list-inside">
+                    {tenTnx ? (
+                      <li>Conduct more than 10 transactions.</li>
+                    ) : (
+                      <li className="text-gray-600">Conduct more than 10 transactions.</li>
+                    )}
 
-            </> : <>
-
-              <div className="content mt-10">
-                <div className="flex justify-between w-full gap-3 lg:flex-nowrap flex-wrap">
-                  <div className="w-full">
-                    <h2 className="text-xl font-extrabold">Wallet  Connected!!!!</h2>
-                    <p className="mt-3 text-[10px]">
-                      Sorry!!! You are not Eligible.
-                    </p>
-                  </div>
-
-                  <div className="w-full">
-                    <p className="text-sm">Refer a Friend to earn more point</p>
-                    <div className="mt-3 w-[object-fit]">
-                      <div className="border border-[#19EF9D] rounded-3xl p-1 px-3 flex justify-between gap-1 cursor-pointer">
-                        <code className="text-[12px] lg:text-sm">capyhl.fun/?ref={address?.substring(0, 5) + `...` + address?.substring(37, address.length)}</code>
-                        <button
-                          onClick={() => navigator.clipboard.writeText(`http://www.capyhl.fun/?ref=${address}`)}
-                          className="ml-2 bg-gray-500 hover:bg-gray-700 text-white text-[10px] lg:text-sm py-1 px-2 rounded"
-                        >
-                          Copy
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-
-                </div>
-
-              </div>
-
-              <div className="py-5 flex justify-between lg:flex-nowrap flex-wrap gap-3">
-                <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl" >
-
-                  <h3 className="">Total $Capy To Claim :</h3>
-
-                  <h1 className="mt-10 font-extrabold text-2xl">{formatNumber(point)}</h1>
-
-
-                  <p className="mt-10 text-[8px]">You are not eligible.</p>
-
-                </div>
-                <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl" >
-                  <h3>Eligibility:</h3>
-
-                  <div className="text-[10px] mt-2">
-                    <ol className="list-decimal list-inside">
-                      <li className="text-gray-600">  Conduct more than 10 transactions.
-                      </li>
-
+                    {fiftyTnx ? (
+                      <li>Conduct more than 50 transactions.</li>
+                    ) : (
                       <li className="text-gray-600">Conduct more than 50 transactions.</li>
+                    )}
+
+                    {hundredTnx ? (
+                      <li>Conduct more than 100 transactions.</li>
+                    ) : (
                       <li className="text-gray-600">Conduct more than 100 transactions.</li>
+                    )}
+
+                    {hyperSwap ? (
+                      <li>Alright Buddy (BUDDY) token holders</li>
+                    ) : (
                       <li className="text-gray-600">Alright Buddy (BUDDY) token holders</li>
+                    )}
+
+                    {liquidLaunch ? (
+                      <li>LiquidLaunch (LIQD) token holders</li>
+                    ) : (
                       <li className="text-gray-600">LiquidLaunch (LIQD) token holders</li>
+                    )}
+
+                    {tenThn ? (
+                      <li>Wealthy Hypio Babies (HYPIO) Nft Holders</li>
+                    ) : (
                       <li className="text-gray-600">Wealthy Hypio Babies (HYPIO) Nft Holders</li>
+                    )}
+
+                    {fiftyThn ? (
+                      <li>PiP & Friends (PIP) Nft Holders</li>
+                    ) : (
                       <li className="text-gray-600">PiP & Friends (PIP) Nft Holders</li>
-
-                    </ol>
-                  </div>
-
+                    )}
+                  </ol>
                 </div>
               </div>
+            </div>
+          </>
+        ) : (
+          // Not Eligible User UI
+          <>
+            <div className="content mt-10">
+              <div className="flex justify-between w-full gap-3 lg:flex-nowrap flex-wrap">
+                <div className="w-full">
+                  <h2 className="text-xl font-extrabold">Wallet Connected!!!!</h2>
+                  <p className="mt-3 text-[10px]">
+                    Sorry!!! You are not Eligible.
+                  </p>
+                </div>
 
-            </>}
+                <div className="w-full">
+                  <p className="text-sm">Refer a Friend to earn more point</p>
+                  <div className="mt-3 w-[object-fit]">
+                    <div className="border border-[#19EF9D] rounded-3xl p-1 px-3 flex justify-between gap-1 cursor-pointer">
+                      <code className="text-[12px] lg:text-sm">
+                        capyhl.fun/?ref={address?.substring(0, 5) + `...` + address?.substring(37, address.length)}
+                      </code>
+                      <button
+                        onClick={() => navigator.clipboard.writeText(`http://www.capyhl.fun/?ref=${address}`)}
+                        className="ml-2 bg-gray-500 hover:bg-gray-700 text-white text-[10px] lg:text-sm py-1 px-2 rounded"
+                      >
+                        Copy
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-          </>}
+            <div className="py-5 flex justify-between lg:flex-nowrap flex-wrap gap-3">
+              <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl">
+                <h3 className="">Total $Capy To Claim :</h3>
+                <h1 className="mt-10 font-extrabold text-2xl">0.0</h1>
+                <p className="mt-10 text-[8px]">You are not eligible.</p>
+              </div>
+              
+              <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl">
+                <h3>Eligibility:</h3>
+                <div className="text-[10px] mt-2">
+                  <ol className="list-decimal list-inside">
+                    <li className="text-gray-600">Conduct more than 10 transactions.</li>
+                    <li className="text-gray-600">Conduct more than 50 transactions.</li>
+                    <li className="text-gray-600">Conduct more than 100 transactions.</li>
+                    <li className="text-gray-600">Alright Buddy (BUDDY) token holders</li>
+                    <li className="text-gray-600">LiquidLaunch (LIQD) token holders</li>
+                    <li className="text-gray-600">Wealthy Hypio Babies (HYPIO) Nft Holders</li>
+                    <li className="text-gray-600">PiP & Friends (PIP) Nft Holders</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+      </>
+    )}
 
-
-          <CountdownTimer />
-        </> : <div className="flex justify-center mt-10">
-          <ConnectWalletButton />
-        </div>}
+    <CountdownTimer />
+  </>
+) : (
+  // Not Connected State
+  <div className="flex justify-center mt-10">
+    <ConnectWalletButton />
+  </div>
+)}
 
 
 
