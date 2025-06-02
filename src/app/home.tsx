@@ -162,12 +162,7 @@ async function fetchData(): Promise<void> {
  const provider = new JsonRpcProvider("https://rpc.hyperliquid.xyz/evm")
 
   try {
-  // Check network
-    const network = await provider.getNetwork();
-    const currentChainId = Number(network?.chainId);
 
-
-    console.log(currentChainId)
 
     setLoading(true);
     let totalNewPoints = 0;
@@ -195,10 +190,6 @@ async function fetchData(): Promise<void> {
 }
 
   async function userDatabase(address: string, totalPoint: number): Promise<number> {
-
-    if (totalPoint <= 0) {
-      return 0
-    }
     try {
       const data = {
         wallet: address,
@@ -207,11 +198,11 @@ async function fetchData(): Promise<void> {
       }
       const res = await axios.post("/user", data);
 
+      console.log(res)
+
       if (res.status === 200) {
         const resData = res.data;
         const referalPoint = resData.refPoint;
-        const total = resData.point
-        console.log(total)
         return referalPoint;
 
       } else if (res.status === 201) {
@@ -266,7 +257,6 @@ async function fetchData(): Promise<void> {
 
     try {
       const balance = await tokenContract.balanceOf(walletAddress);
-      console.log(balance)
 
       const normalized = ethers.formatUnits(balance, 18);
       if (parseFloat(normalized) > 0) {
@@ -290,7 +280,6 @@ async function fetchData(): Promise<void> {
 
     try {
       const balance = await tokenContract.balanceOf(walletAddress);
-      console.log(balance)
       const normalized = ethers.formatUnits(balance, 18);
       if (parseFloat(normalized) > 0) {
         sethyperSwap(true)
