@@ -10,16 +10,8 @@ interface TimeLeft {
 
 const CountdownTimer: React.FC = () => {
   const calculateTimeLeft = (): TimeLeft => {
-    const storedEndDate = localStorage.getItem('countdownEndDate');
     let endDate: Date;
-
-    if (storedEndDate) {
-      endDate = new Date(storedEndDate);
-    } else {
-      endDate = new Date();
-      endDate.setDate(endDate.getDate() + 14);
-      localStorage.setItem('countdownEndDate', endDate.toISOString());
-    }
+    endDate = new Date("2025-06-16T09:51:12.274Z");
 
     const now = new Date();
     const difference = endDate.getTime() - now.getTime();
