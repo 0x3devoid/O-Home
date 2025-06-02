@@ -4,13 +4,14 @@ import Image from "next/image";
 import Navbar from './navbar'
 import { CopyIcon, Send, Twitter } from "lucide-react"
 import { useWallet } from './context/WalletContext';
-import { useWeb3ModalProvider } from "@web3modal/ethers/react";
+import { useWeb3ModalProvider,useWeb3ModalAccount } from "@web3modal/ethers/react";
 import { ethers, JsonRpcProvider, Contract } from 'ethers';
 import { ERC20_ABI } from './config/constants/abi'
 import CountdownTimer from "./countdown"
 import axios from "./api/axios";
 import { useSearchParams } from 'next/navigation';
 import CapyFooter from './footer'
+
 
 
 const OverTenPoint = 2778
@@ -59,7 +60,7 @@ function formatNumber(value: number): string {
 const LoadingSpinner: React.FC = () => (
   <div className="flex justify-center py-8">
     <div className="animate-spin h-8 w-8 border-8 border-[#1EEDD8] rounded-full border-t-transparent"></div>
-    <p className="m-1 ">Scanning...</p>
+    <p className="m-1 ">Capy Scanning...</p>
   </div>
 );
 
@@ -67,7 +68,8 @@ const LoadingSpinner: React.FC = () => (
 export default function Home() {
   const searchParams = useSearchParams();
 
-  const { isConnected, address } = useWallet();
+  // const { isConnected, address } = useWallet();
+   const { address, isConnected } = useWeb3ModalAccount()
   const { walletProvider } = useWeb3ModalProvider();
 
 
@@ -150,22 +152,21 @@ export default function Home() {
   }
 
 
-  useEffect(() => {
-    fetchData();
-  }, [isConnected, address, walletProvider])
+useEffect(() => {
+  // Reset points when wallet changes
+  setPoint(0);
+  fetchData();
+}, [isConnected, address, walletProvider])
 
 async function fetchData(): Promise<void> {
-  if (!isConnected || !address) {
+  if (!isConnected || !address || !walletProvider) {
+    setPoint(0); // Reset points when disconnected
     return;
   }
-
- const provider = new JsonRpcProvider("https://rpc.hyperliquid.xyz/evm")
-
   try {
-
-
     setLoading(true);
     let totalNewPoints = 0;
+    console.log(`Checking for ${address}`)
 
     totalNewPoints += await getAllUserTransactionCounts(address);
     totalNewPoints += await LiquidLauchHolder(address);
@@ -174,7 +175,8 @@ async function fetchData(): Promise<void> {
     totalNewPoints += await isPipNFTHolder(address);
     totalNewPoints += await userDatabase(address, totalNewPoints);
     
-    setPoint(prevPoint => prevPoint + totalNewPoints);
+    // Set absolute value instead of accumulating
+    setPoint(totalNewPoints);
     
   } catch (error: any) {
     console.error("Error fetching data:", error);
@@ -182,7 +184,7 @@ async function fetchData(): Promise<void> {
     if (error.code === 'NETWORK_ERROR') {
       console.error('Network connection issue');
     }
-      setError('Network connection issue, Please Make Sure Your are connected to HyperEvm chain.')
+    setError('Network connection issue, Please Make Sure Your are connected to HyperEvm chain.')
 
   } finally {
     setLoading(false);
@@ -213,7 +215,6 @@ async function fetchData(): Promise<void> {
 
     } catch (err) {
       console.log(err);
-
 
     }
 
@@ -433,7 +434,7 @@ async function fetchData(): Promise<void> {
         </div>
 
 
-       {isConnected ? (
+       {isConnected && address ? (
   <>
     {error ? (
       // Error State
