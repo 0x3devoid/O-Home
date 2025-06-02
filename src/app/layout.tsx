@@ -6,7 +6,7 @@ const aldrich = Aldrich({ weight: '400', subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: "CAPY",
-  description: "$CAPY ",
+  description: "$CAPY is live! Calling All Friends On HyperEvm.",
 };
 
 export default function RootLayout({
