@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Navbar from './navbar'
-import { CopyIcon } from "lucide-react"
+import { CopyIcon, Send, Twitter } from "lucide-react"
 import { useWallet } from './context/WalletContext';
 import { useWeb3ModalProvider } from "@web3modal/ethers/react";
 import { ethers, JsonRpcProvider, Contract } from 'ethers';
@@ -10,6 +10,7 @@ import { ERC20_ABI } from './config/constants/abi'
 import CountdownTimer from "./countdown"
 import axios from "./api/axios";
 import { useSearchParams } from 'next/navigation';
+import CapyFooter from './footer'
 
 
 const OverTenPoint = 2778
@@ -30,7 +31,7 @@ const ConnectWalletButton: React.FC = () => {
   return (
     <button
       onClick={connectWallet}
-      className="border border-[#1EEDD8] rounded-2xl p-2 px-7 text-sm flex "
+      className="border border-[#1EEDD8] rounded-2xl p-2 px-7 text-sm flex"
     >
       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
         <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clipRule="evenodd" />
@@ -401,7 +402,7 @@ async function fetchData(): Promise<void> {
           <div className="hidden rounded-2xl bg-[#a3f5ed] p-2 lg:flex justify-center relative w-full h-[250px] mr-[-30px]">
             <Image
               src="/images/swim.jpg"
-              alt="Capy logo"
+              alt="Capy"
               fill
               className="object-contain"
               priority
@@ -433,7 +434,7 @@ async function fetchData(): Promise<void> {
           <div className="lg:hidden rounded-2xl bg-[#a3f5ed] p-2 flex justify-center relative w-full h-[200px] mt-[-30px]">
             <Image
               src="/images/swim.jpg"
-              alt="capy logo"
+              alt="capy"
               fill
               className="object-contain"
               priority
@@ -476,14 +477,14 @@ async function fetchData(): Promise<void> {
             <div className="content mt-10">
               <div className="flex justify-between w-full gap-3 lg:flex-nowrap flex-wrap">
                 <div className="w-full">
-                  <h2 className="text-xl font-extrabold">Wallet Connected!!!!</h2>
+                  <h2 className="text-xl font-extrabold">You’re In, Capy Friend!</h2>
                   <p className="mt-3 text-[10px]">
-                    Great news! We found your account eligible, and you're eligible to claim your reward🎉🎉🎉.
+                Great news Capy pal! Capy found your account eligible🎉🎉🎉.
                   </p>
                 </div>
 
                 <div className="w-full">
-                  <p className="text-sm">Refer a Friend to earn more point</p>
+                  <p className="text-sm">Join the crew , connect another wallet or perform more transactions before the snapshot.</p>
                   <div className="mt-3 w-[object-fit]">
                     <div className="border border-[#19EF9D] rounded-3xl p-1 px-3 flex justify-between gap-1 cursor-pointer">
                       <code className="text-[12px] lg:text-sm">
@@ -491,9 +492,9 @@ async function fetchData(): Promise<void> {
                       </code>
                       <button
                         onClick={() => navigator.clipboard.writeText(`http://www.capyhl.fun/?ref=${address}`)}
-                        className="ml-2 bg-gray-500 hover:bg-gray-700 text-white text-[10px] lg:text-sm py-1 px-2 rounded flex"
+                        className="ml-2 bg-gray-500 hover:bg-gray-700 text-white text-[10px] lg:text-sm py-1 px-2 rounded"
                       >
-                        Copy <CopyIcon width={10} />
+                        Copy
                       </button>
                     </div>
                   </div>
@@ -566,12 +567,12 @@ async function fetchData(): Promise<void> {
                 <div className="w-full">
                   <h2 className="text-xl font-extrabold">Wallet Connected!!!!</h2>
                   <p className="mt-3 text-[10px]">
-                    Sorry!!! You are not Eligible.
+                    Oops! Capy only invites friends to the party, you're not eligible 
                   </p>
                 </div>
 
                 <div className="w-full">
-                  <p className="text-sm">Refer a Friend to earn more point</p>
+                  <p className="text-sm">Join the crew , connect another wallet or perform more transactions before the snapshot</p>
                   <div className="mt-3 w-[object-fit]">
                     <div className="border border-[#19EF9D] rounded-3xl p-1 px-3 flex justify-between gap-1 cursor-pointer">
                       <code className="text-[12px] lg:text-sm">
@@ -720,41 +721,40 @@ async function fetchData(): Promise<void> {
 
         <div className="m-auto bg-[#0000004D] bg-opacity-30 rounded-2xl p-4 lg:w-[500px] w-[300px] mt-10">
 
-          <p className="text-[10px] text-center">
-            Keep up with our socail media to get the latest updates on how you can join upcoming launches and campaigne in the Capy ecosystem. For mpre information on our eligiblity and TGE, follow us on all on social media.
+          <p className="text-[10px] lg:text-sm text-center">
+Stay in the loop with the Capy!  Follow our socials for updates on $CAPY drops and how you can join upcoming launches and campaigns.
           </p>
 
-          <div className="flex justify-center mt-2">
-            <Image
-              src="/images/discord.png"
-              alt="Next.js logo"
-              width={20}
-              height={20}
-
-
-            />
-            <Image
-              src="/images/youtube.png"
-              alt="Next.js logo"
-              width={20}
-              height={20}
-
-            /> <Image
-              src="/images/instagram.png"
-              alt="Next.js logo"
-              width={20}
-              height={20}
-
-            />
-          </div>
-
+      <div className="flex justify-center items-center gap-6 mt-6">
+      <a 
+        href="https://t.me/capyhl" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-full transition-all duration-300 transform hover:scale-105 hover:shadow-lg group"
+      >
+        <Send size={15} className="group-hover:animate-pulse" />
+        <span className="font-medium text-[10px] lg:text-sm">Telegram</span>
+      </a>
+      
+      <a 
+        href="https://x.com/Capyhl" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 text-white rounded-full transition-all duration-300 transform hover:scale-105 hover:shadow-lg group"
+      >
+        <Twitter size={15} className="group-hover:animate-pulse" />
+        <span className="font-medium text-[10px] lg:text-sm">Twitter</span>
+      </a>
+    </div>
 
         </div>
 
 
       </main>
 
+      <CapyFooter/>
 
+{/* 
       <footer className="mt-20">
 
         <div className="mb-5">
@@ -771,29 +771,10 @@ async function fetchData(): Promise<void> {
           <p className="text-[8px]">Capy,  All Rights Reserved | Copyright © 2025</p>
 
           <div className="flex justify-center">
-            <Image
-              src="/images/discord.png"
-              alt="Next.js logo"
-              width={20}
-              height={20}
-
-            />
-            <Image
-              src="/images/youtube.png"
-              alt="Next.js logo"
-              width={20}
-              height={20}
-
-            /> <Image
-              src="/images/instagram.png"
-              alt="Next.js logo"
-              width={20}
-              height={20}
-
-            />
+            
           </div>
         </div>
-      </footer>
+      </footer> */}
 
     </>
   );
