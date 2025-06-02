@@ -678,9 +678,9 @@ async function fetchData(): Promise<void> {
                       <div className="text-right">
                         <div className="text-[10px] lg:text-sm font-medium text-gray-500 uppercase tracking-wide">
                           {globalIndex < 3 ? (
-                            <span className="text-gray-200">Points</span>
+                            <span className="text-gray-200">$CAPY</span>
                           ) : (
-                            'Points'
+                            'CAPY'
                           )}
                         </div>
                         <div className={`text-xl lg:text-2xl font-bold ${globalIndex < 3 ? 'text-white' : 'text-gray-900'}`}>
