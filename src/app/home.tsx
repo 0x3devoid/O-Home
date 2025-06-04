@@ -11,6 +11,7 @@ import CountdownTimer from "./countdown"
 import axios from "./api/axios";
 import { useSearchParams } from 'next/navigation';
 import CapyFooter from './footer'
+import SocialsHandler from "./socials";
 
 
 
@@ -200,17 +201,19 @@ async function fetchData(): Promise<void> {
       }
       const res = await axios.post("/user", data);
 
-      console.log(res)
-
       if (res.status === 200) {
         const resData = res.data;
         const referalPoint = resData.refPoint;
-        return referalPoint;
+        const x = resData.x;
+        const tg = resData.tg;
+        return referalPoint + x + tg;
 
       } else if (res.status === 201) {
         const resData = res.data;
         const referalPoint = resData.refPoint;
-        return referalPoint;
+        const x = resData.x;
+        const tg = resData.tg;
+        return referalPoint + x + tg;
       }
 
     } catch (err) {
@@ -490,6 +493,7 @@ async function fetchData(): Promise<void> {
                   </div>
                 </div>
               </div>
+
             </div>
 
             <div className="py-5 flex justify-between lg:flex-nowrap flex-wrap gap-3">
@@ -501,7 +505,7 @@ async function fetchData(): Promise<void> {
               
               <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl">
                 <h3>Eligibility:</h3>
-                <div className="text-[10px] mt-2">
+                <div className="text-[12px] mt-2">
                   <ol className="list-decimal list-inside">
                     {tenTnx ? (
                       <li>Conduct more than 10 transactions.</li>
@@ -548,6 +552,10 @@ async function fetchData(): Promise<void> {
                 </div>
               </div>
             </div>
+
+
+              <SocialsHandler address={address} />
+
           </>
         ) : (
           // Not Eligible User UI
@@ -589,7 +597,7 @@ async function fetchData(): Promise<void> {
               
               <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl">
                 <h3>Eligibility:</h3>
-                <div className="text-[10px] mt-2">
+                <div className="text-[12px] mt-2">
                   <ol className="list-decimal list-inside">
                     <li className="text-gray-600">Conduct more than 10 transactions.</li>
                     <li className="text-gray-600">Conduct more than 50 transactions.</li>
@@ -602,6 +610,9 @@ async function fetchData(): Promise<void> {
                 </div>
               </div>
             </div>
+
+              <SocialsHandler address={address}/>
+
           </>
         )}
       </>
