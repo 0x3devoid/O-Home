@@ -554,7 +554,7 @@ async function fetchData(): Promise<void> {
             </div>
 
 
-              <SocialsHandler address={address} />
+              {/* <SocialsHandler address={address} /> */}
 
           </>
         ) : (
@@ -611,7 +611,7 @@ async function fetchData(): Promise<void> {
               </div>
             </div>
 
-              <SocialsHandler address={address}/>
+              {/* <SocialsHandler address={address}/> */}
 
           </>
         )}
