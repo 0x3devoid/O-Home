@@ -4,7 +4,7 @@ import Image from "next/image";
 import Navbar from './navbar'
 import { CopyIcon, Send, Twitter } from "lucide-react"
 import { useWallet } from './context/WalletContext';
-import { useWeb3ModalProvider,useWeb3ModalAccount } from "@web3modal/ethers/react";
+import { useWeb3ModalProvider, useWeb3ModalAccount } from "@web3modal/ethers/react";
 import { ethers, JsonRpcProvider, Contract } from 'ethers';
 import { ERC20_ABI } from './config/constants/abi'
 import CountdownTimer from "./countdown"
@@ -70,7 +70,7 @@ export default function Home() {
   const searchParams = useSearchParams();
 
   // const { isConnected, address } = useWallet();
-   const { address, isConnected } = useWeb3ModalAccount()
+  const { address, isConnected } = useWeb3ModalAccount()
   const { walletProvider } = useWeb3ModalProvider();
 
 
@@ -139,91 +139,85 @@ export default function Home() {
   };
 
   async function fetchMata(): Promise<void> {
-  try{
-      const res = await axios.get("/data");
-    if (res.status === 200) {
-      const data = res.data;
-      setUserVolume(data.totalUsers)
-      setCapyVolume(data.totalPoints)
-    }
-  }catch(error: any){
-    console.log(error)
-  }
-
-  }
-
-
-useEffect(() => {
-  // Reset points when wallet changes
-  setPoint(0);
-  fetchData();
-}, [isConnected, address, walletProvider])
-
-async function fetchData(): Promise<void> {
-  if (!isConnected || !address || !walletProvider) {
-    setPoint(0); // Reset points when disconnected
-    return;
-  }
-  try {
-    setLoading(true);
-    let totalNewPoints = 0;
-    console.log(`Checking for ${address}`)
-
-    totalNewPoints += await getAllUserTransactionCounts(address);
-    totalNewPoints += await LiquidLauchHolder(address);
-    totalNewPoints += await BuddyHolder(address);
-    totalNewPoints += await isHypioNFTHolder(address);
-    totalNewPoints += await isPipNFTHolder(address);
-    totalNewPoints += await userDatabase(address, totalNewPoints);
-    
-    // Set absolute value instead of accumulating
-    setPoint(totalNewPoints);
-    
-  } catch (error: any) {
-    console.error("Error fetching data:", error);
-    // Handle specific network errors
-    if (error.code === 'NETWORK_ERROR') {
-      console.error('Network connection issue');
-    }
-    setError('Network connection issue, Please Make Sure Your are connected to HyperEvm chain.')
-
-  } finally {
-    setLoading(false);
-  }
-}
-
-  async function userDatabase(address: string, totalPoint: number): Promise<number> {
     try {
-      const data = {
-        wallet: address,
-        refAddress: referral,
-        point: totalPoint
-      }
-      const res = await axios.post("/user", data);
-
+      const res = await axios.get("/data");
       if (res.status === 200) {
-        const resData = res.data;
-        const referalPoint = resData.refPoint;
-        const x = resData.x;
-        const tg = resData.tg;
-        return referalPoint + x + tg;
-
-      } else if (res.status === 201) {
-        const resData = res.data;
-        const referalPoint = resData.refPoint;
-        const x = resData.x;
-        const tg = resData.tg;
-        return referalPoint + x + tg;
+        const data = res.data;
+        setUserVolume(data.totalUsers)
+        setCapyVolume(data.totalPoints)
       }
-
-    } catch (err) {
-      console.log(err);
-
+    } catch (error: any) {
+      console.log(error)
     }
 
-    return 0
-
   }
+
+
+  useEffect(() => {
+    // Reset points when wallet changes
+    setPoint(0);
+    fetchData();
+  }, [isConnected, address, walletProvider])
+
+  async function fetchData(): Promise<void> {
+    if (!isConnected || !address || !walletProvider) {
+      setPoint(0); // Reset points when disconnected
+      return;
+    }
+    try {
+      setLoading(true);
+      let totalNewPoints = 0;
+      console.log(`Checking for ${address}`)
+
+      totalNewPoints += await getAllUserTransactionCounts(address);
+      totalNewPoints += await LiquidLauchHolder(address);
+      totalNewPoints += await BuddyHolder(address);
+      totalNewPoints += await isHypioNFTHolder(address);
+      totalNewPoints += await isPipNFTHolder(address);
+      totalNewPoints += await userDatabase(address, totalNewPoints);
+
+      // Set absolute value instead of accumulating
+      setPoint(totalNewPoints);
+
+    } catch (error: any) {
+      console.error("Error fetching data:", error);
+      // Handle specific network errors
+      if (error.code === 'NETWORK_ERROR') {
+        console.error('Network connection issue');
+      }
+      setError('Network connection issue, Please Make Sure Your are connected to HyperEvm chain.')
+
+    } finally {
+      setLoading(false);
+    }
+  }
+
+ async function userDatabase(address: string, totalPoint: number): Promise<number> {
+  try {
+    const data = {
+      wallet: address,
+      refAddress: referral,
+      point: totalPoint
+    };
+
+    const res = await axios.post("/user", data);
+
+    if (res.status === 200 || res.status === 201) {
+      const resData = res.data;
+      const referalPoint = resData.refPoint;
+      const x = resData.x || 0;
+      const tg = resData.tg || 0;
+
+      const total = x + tg;
+
+      return referalPoint + total;
+    }
+  } catch (err) {
+    console.log(err);
+  }
+
+  return 0;
+}
 
   async function getAllUserTransactionCounts(address: string): Promise<number> {
     let newPoint: number = 0;
@@ -256,7 +250,7 @@ async function fetchData(): Promise<void> {
     if (!walletProvider) {
       return 0;
     }
-   const provider = new JsonRpcProvider("https://rpc.hyperliquid.xyz/evm")
+    const provider = new JsonRpcProvider("https://rpc.hyperliquid.xyz/evm")
     const tokenContract = new Contract("0x1Ecd15865D7F8019D546f76d095d9c93cc34eDFa", ERC20_ABI, provider);
 
     try {
@@ -305,7 +299,7 @@ async function fetchData(): Promise<void> {
     if (!walletProvider) {
       return 0
     }
-   const provider = new JsonRpcProvider("https://rpc.hyperliquid.xyz/evm")
+    const provider = new JsonRpcProvider("https://rpc.hyperliquid.xyz/evm")
     const nftContractAddress = "0x63eb9d77D083cA10C304E28d5191321977fd0Bfb"
     const nftContract = new ethers.Contract(nftContractAddress, ERC721_ABI, provider);
 
@@ -437,195 +431,195 @@ async function fetchData(): Promise<void> {
         </div>
 
 
-       {isConnected && address ? (
-  <>
-    {error ? (
-      // Error State
-      <div className="content mt-10">
-        <div className="flex justify-center">
-          <div className="p-6 bg-red-500 bg-opacity-10 border border-red-500 rounded-2xl max-w-md text-center">
-            <h2 className="text-xl font-extrabold text-red-400 mb-4">Error Occurred</h2>
-            <p className="text-sm text-red-300 mb-4">{error}</p>
-            <button
-              onClick={async() => {
-               await fetchData(); // Retry fetching data
-                setError(null);
-              }}
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm"
-            >
-              Try Again
-            </button>
-          </div>
-        </div>
-      </div>
-    ) : loading ? (
-      // Loading State
-      <LoadingSpinner />
-    ) : (
-      // Success State
-      <>
-        {point > 0 ? (
-          // Eligible User UI
+        {isConnected && address ? (
           <>
-            <div className="content mt-10">
-              <div className="flex justify-between w-full gap-3 lg:flex-nowrap flex-wrap">
-                <div className="w-full">
-                  <h2 className="text-xl font-extrabold">You’re In, Capy Friend!</h2>
-                  <p className="mt-3 text-[10px]">
-                Great news Capy pal! Capy found your account eligible🎉🎉🎉.
-                  </p>
-                </div>
-
-                <div className="w-full">
-                  <p className="text-sm">Join the crew , connect another wallet or perform more transactions before the snapshot.</p>
-                  <div className="mt-3 w-[object-fit]">
-                    <div className="border border-[#19EF9D] rounded-3xl p-1 px-3 flex justify-between gap-1 cursor-pointer">
-                      <code className="text-[12px] lg:text-sm">
-                        capyhl.fun/?ref={address?.substring(0, 5) + `...` + address?.substring(37, address.length)}
-                      </code>
-                      <button
-                        onClick={() => navigator.clipboard.writeText(`http://www.capyhl.fun/?ref=${address}`)}
-                        className="ml-2 bg-gray-500 hover:bg-gray-700 text-white text-[10px] lg:text-sm py-1 px-2 rounded"
-                      >
-                        Copy
-                      </button>
-                    </div>
+            {error ? (
+              // Error State
+              <div className="content mt-10">
+                <div className="flex justify-center">
+                  <div className="p-6 bg-red-500 bg-opacity-10 border border-red-500 rounded-2xl max-w-md text-center">
+                    <h2 className="text-xl font-extrabold text-red-400 mb-4">Error Occurred</h2>
+                    <p className="text-sm text-red-300 mb-4">{error}</p>
+                    <button
+                      onClick={async () => {
+                        await fetchData(); // Retry fetching data
+                        setError(null);
+                      }}
+                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm"
+                    >
+                      Try Again
+                    </button>
                   </div>
                 </div>
               </div>
+            ) : loading ? (
+              // Loading State
+              <LoadingSpinner />
+            ) : (
+              // Success State
+              <>
+                {point > 0 ? (
+                  // Eligible User UI
+                  <>
+                    <div className="content mt-10">
+                      <div className="flex justify-between w-full gap-3 lg:flex-nowrap flex-wrap">
+                        <div className="w-full">
+                          <h2 className="text-xl font-extrabold">You’re In, Capy Friend!</h2>
+                          <p className="mt-3 text-[10px]">
+                            Great news Capy pal! Capy found your account eligible🎉🎉🎉.
+                          </p>
+                        </div>
 
-            </div>
+                        <div className="w-full">
+                          <p className="text-sm">Join the crew , connect another wallet or perform more transactions before the snapshot.</p>
+                          <div className="mt-3 w-[object-fit]">
+                            <div className="border border-[#19EF9D] rounded-3xl p-1 px-3 flex justify-between gap-1 cursor-pointer">
+                              <code className="text-[12px] lg:text-sm">
+                                capyhl.fun/?ref={address?.substring(0, 5) + `...` + address?.substring(37, address.length)}
+                              </code>
+                              <button
+                                onClick={() => navigator.clipboard.writeText(`http://www.capyhl.fun/?ref=${address}`)}
+                                className="ml-2 bg-gray-500 hover:bg-gray-700 text-white text-[10px] lg:text-sm py-1 px-2 rounded"
+                              >
+                                Copy
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
 
-            <div className="py-5 flex justify-between lg:flex-nowrap flex-wrap gap-3">
-              <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl">
-                <h3 className="">Total $Capy To Claim :</h3>
-                <h1 className="mt-10 font-extrabold text-2xl">{formatNumber(point)}</h1>
-                <p className="mt-10 text-[8px]">You'll need to sign 1 chunks of transactions.</p>
-              </div>
-              
-              <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl">
-                <h3>Eligibility:</h3>
-                <div className="text-[12px] mt-2">
-                  <ol className="list-decimal list-inside">
-                    {tenTnx ? (
-                      <li>Conduct more than 10 transactions.</li>
-                    ) : (
-                      <li className="text-gray-600">Conduct more than 10 transactions.</li>
-                    )}
+                    </div>
 
-                    {fiftyTnx ? (
-                      <li>Conduct more than 50 transactions.</li>
-                    ) : (
-                      <li className="text-gray-600">Conduct more than 50 transactions.</li>
-                    )}
+                    <div className="py-5 flex justify-between lg:flex-nowrap flex-wrap gap-3">
+                      <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl">
+                        <h3 className="">Total $Capy To Claim :</h3>
+                        <h1 className="mt-10 font-extrabold text-2xl">{formatNumber(point)}</h1>
+                        <p className="mt-10 text-[8px]">You'll need to sign 1 chunks of transactions.</p>
+                      </div>
 
-                    {hundredTnx ? (
-                      <li>Conduct more than 100 transactions.</li>
-                    ) : (
-                      <li className="text-gray-600">Conduct more than 100 transactions.</li>
-                    )}
+                      <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl">
+                        <h3>Eligibility:</h3>
+                        <div className="text-[12px] mt-2">
+                          <ol className="list-decimal list-inside">
+                            {tenTnx ? (
+                              <li>Conduct more than 10 transactions.</li>
+                            ) : (
+                              <li className="text-gray-600">Conduct more than 10 transactions.</li>
+                            )}
 
-                    {hyperSwap ? (
-                      <li>Alright Buddy (BUDDY) token holders</li>
-                    ) : (
-                      <li className="text-gray-600">Alright Buddy (BUDDY) token holders</li>
-                    )}
+                            {fiftyTnx ? (
+                              <li>Conduct more than 50 transactions.</li>
+                            ) : (
+                              <li className="text-gray-600">Conduct more than 50 transactions.</li>
+                            )}
 
-                    {liquidLaunch ? (
-                      <li>LiquidLaunch (LIQD) token holders</li>
-                    ) : (
-                      <li className="text-gray-600">LiquidLaunch (LIQD) token holders</li>
-                    )}
+                            {hundredTnx ? (
+                              <li>Conduct more than 100 transactions.</li>
+                            ) : (
+                              <li className="text-gray-600">Conduct more than 100 transactions.</li>
+                            )}
 
-                    {tenThn ? (
-                      <li>Wealthy Hypio Babies (HYPIO) Nft Holders</li>
-                    ) : (
-                      <li className="text-gray-600">Wealthy Hypio Babies (HYPIO) Nft Holders</li>
-                    )}
+                            {hyperSwap ? (
+                              <li>Alright Buddy (BUDDY) token holders</li>
+                            ) : (
+                              <li className="text-gray-600">Alright Buddy (BUDDY) token holders</li>
+                            )}
 
-                    {fiftyThn ? (
-                      <li>PiP & Friends (PIP) Nft Holders</li>
-                    ) : (
-                      <li className="text-gray-600">PiP & Friends (PIP) Nft Holders</li>
-                    )}
-                  </ol>
-                </div>
-              </div>
-            </div>
+                            {liquidLaunch ? (
+                              <li>LiquidLaunch (LIQD) token holders</li>
+                            ) : (
+                              <li className="text-gray-600">LiquidLaunch (LIQD) token holders</li>
+                            )}
+
+                            {tenThn ? (
+                              <li>Wealthy Hypio Babies (HYPIO) Nft Holders</li>
+                            ) : (
+                              <li className="text-gray-600">Wealthy Hypio Babies (HYPIO) Nft Holders</li>
+                            )}
+
+                            {fiftyThn ? (
+                              <li>PiP & Friends (PIP) Nft Holders</li>
+                            ) : (
+                              <li className="text-gray-600">PiP & Friends (PIP) Nft Holders</li>
+                            )}
+                          </ol>
+                        </div>
+                      </div>
+                    </div>
 
 
-              <SocialsHandler address={address} />
+                    <SocialsHandler address={address} />
 
+                  </>
+                ) : (
+                  // Not Eligible User UI
+                  <>
+                    <div className="content mt-10">
+                      <div className="flex justify-between w-full gap-3 lg:flex-nowrap flex-wrap">
+                        <div className="w-full">
+                          <h2 className="text-xl font-extrabold">Wallet Connected!!!!</h2>
+                          <p className="mt-3 text-[10px]">
+                            Oops! Capy only invites friends to the party, you're not eligible
+                          </p>
+                        </div>
+
+                        <div className="w-full">
+                          <p className="text-sm">Join the crew , connect another wallet or perform more transactions before the snapshot</p>
+                          <div className="mt-3 w-[object-fit]">
+                            <div className="border border-[#19EF9D] rounded-3xl p-1 px-3 flex justify-between gap-1 cursor-pointer">
+                              <code className="text-[12px] lg:text-sm">
+                                capyhl.fun/?ref={address?.substring(0, 5) + `...` + address?.substring(37, address.length)}
+                              </code>
+                              <button
+                                onClick={() => navigator.clipboard.writeText(`http://www.capyhl.fun/?ref=${address}`)}
+                                className="ml-2 bg-gray-500 hover:bg-gray-700 text-white text-[10px] lg:text-sm py-1 px-2 rounded"
+                              >
+                                Copy
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="py-5 flex justify-between lg:flex-nowrap flex-wrap gap-3">
+                      <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl">
+                        <h3 className="">Total $Capy To Claim :</h3>
+                        <h1 className="mt-10 font-extrabold text-2xl">0.0</h1>
+                        <p className="mt-10 text-[8px]">You are not eligible.</p>
+                      </div>
+
+                      <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl">
+                        <h3>Eligibility:</h3>
+                        <div className="text-[12px] mt-2">
+                          <ol className="list-decimal list-inside">
+                            <li className="text-gray-600">Conduct more than 10 transactions.</li>
+                            <li className="text-gray-600">Conduct more than 50 transactions.</li>
+                            <li className="text-gray-600">Conduct more than 100 transactions.</li>
+                            <li className="text-gray-600">Alright Buddy (BUDDY) token holders</li>
+                            <li className="text-gray-600">LiquidLaunch (LIQD) token holders</li>
+                            <li className="text-gray-600">Wealthy Hypio Babies (HYPIO) Nft Holders</li>
+                            <li className="text-gray-600">PiP & Friends (PIP) Nft Holders</li>
+                          </ol>
+                        </div>
+                      </div>
+                    </div>
+
+                    <SocialsHandler address={address} />
+
+                  </>
+                )}
+              </>
+            )}
+
+            <CountdownTimer />
           </>
         ) : (
-          // Not Eligible User UI
-          <>
-            <div className="content mt-10">
-              <div className="flex justify-between w-full gap-3 lg:flex-nowrap flex-wrap">
-                <div className="w-full">
-                  <h2 className="text-xl font-extrabold">Wallet Connected!!!!</h2>
-                  <p className="mt-3 text-[10px]">
-                    Oops! Capy only invites friends to the party, you're not eligible 
-                  </p>
-                </div>
-
-                <div className="w-full">
-                  <p className="text-sm">Join the crew , connect another wallet or perform more transactions before the snapshot</p>
-                  <div className="mt-3 w-[object-fit]">
-                    <div className="border border-[#19EF9D] rounded-3xl p-1 px-3 flex justify-between gap-1 cursor-pointer">
-                      <code className="text-[12px] lg:text-sm">
-                        capyhl.fun/?ref={address?.substring(0, 5) + `...` + address?.substring(37, address.length)}
-                      </code>
-                      <button
-                        onClick={() => navigator.clipboard.writeText(`http://www.capyhl.fun/?ref=${address}`)}
-                        className="ml-2 bg-gray-500 hover:bg-gray-700 text-white text-[10px] lg:text-sm py-1 px-2 rounded"
-                      >
-                        Copy
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="py-5 flex justify-between lg:flex-nowrap flex-wrap gap-3">
-              <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl">
-                <h3 className="">Total $Capy To Claim :</h3>
-                <h1 className="mt-10 font-extrabold text-2xl">0.0</h1>
-                <p className="mt-10 text-[8px]">You are not eligible.</p>
-              </div>
-              
-              <div className="p-4 bg-[#ffffff] bg-opacity-5 w-full rounded-2xl">
-                <h3>Eligibility:</h3>
-                <div className="text-[12px] mt-2">
-                  <ol className="list-decimal list-inside">
-                    <li className="text-gray-600">Conduct more than 10 transactions.</li>
-                    <li className="text-gray-600">Conduct more than 50 transactions.</li>
-                    <li className="text-gray-600">Conduct more than 100 transactions.</li>
-                    <li className="text-gray-600">Alright Buddy (BUDDY) token holders</li>
-                    <li className="text-gray-600">LiquidLaunch (LIQD) token holders</li>
-                    <li className="text-gray-600">Wealthy Hypio Babies (HYPIO) Nft Holders</li>
-                    <li className="text-gray-600">PiP & Friends (PIP) Nft Holders</li>
-                  </ol>
-                </div>
-              </div>
-            </div>
-
-              <SocialsHandler address={address}/>
-
-          </>
+          // Not Connected State
+          <div className="flex justify-center mt-10">
+            <ConnectWalletButton />
+          </div>
         )}
-      </>
-    )}
-
-    <CountdownTimer />
-  </>
-) : (
-  // Not Connected State
-  <div className="flex justify-center mt-10">
-    <ConnectWalletButton />
-  </div>
-)}
 
 
 
@@ -723,39 +717,39 @@ async function fetchData(): Promise<void> {
         <div className="m-auto bg-[#0000004D] bg-opacity-30 rounded-2xl p-4 lg:w-[500px] w-[300px] mt-10">
 
           <p className="text-[10px] lg:text-sm text-center">
-Stay in the loop with the Capy!  Follow our socials for updates on $CAPY drops and how you can join upcoming launches and campaigns.
+            Stay in the loop with the Capy!  Follow our socials for updates on $CAPY drops and how you can join upcoming launches and campaigns.
           </p>
 
-      <div className="flex justify-center items-center gap-6 mt-6">
-      <a 
-        href="https://t.me/capyhl" 
-        target="_blank" 
-        rel="noopener noreferrer"
-        className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-full transition-all duration-300 transform hover:scale-105 hover:shadow-lg group"
-      >
-        <Send size={15} className="group-hover:animate-pulse" />
-        <span className="font-medium text-[10px] lg:text-sm">Telegram</span>
-      </a>
-      
-      <a 
-        href="https://x.com/Capyhl" 
-        target="_blank" 
-        rel="noopener noreferrer"
-        className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 text-white rounded-full transition-all duration-300 transform hover:scale-105 hover:shadow-lg group"
-      >
-        <Twitter size={15} className="group-hover:animate-pulse" />
-        <span className="font-medium text-[10px] lg:text-sm">Twitter</span>
-      </a>
-    </div>
+          <div className="flex justify-center items-center gap-6 mt-6">
+            <a
+              href="https://t.me/capyhl"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-full transition-all duration-300 transform hover:scale-105 hover:shadow-lg group"
+            >
+              <Send size={15} className="group-hover:animate-pulse" />
+              <span className="font-medium text-[10px] lg:text-sm">Telegram</span>
+            </a>
+
+            <a
+              href="https://x.com/Capyhl"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 text-white rounded-full transition-all duration-300 transform hover:scale-105 hover:shadow-lg group"
+            >
+              <Twitter size={15} className="group-hover:animate-pulse" />
+              <span className="font-medium text-[10px] lg:text-sm">Twitter</span>
+            </a>
+          </div>
 
         </div>
 
 
       </main>
 
-      <CapyFooter/>
+      <CapyFooter />
 
-{/* 
+      {/* 
       <footer className="mt-20">
 
         <div className="mb-5">
