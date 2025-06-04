@@ -94,6 +94,7 @@ const SocialsHandler = ({ address }: SocialsHandlerProps) => {
             // Call API to mark as completed
             const res = await axios.post(`/user/socials/x/${address}`)
             
+            
             if (res.data.success) {
                 setCompleteX(true)
                 setXCanClaim(false)

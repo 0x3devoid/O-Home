@@ -167,7 +167,7 @@ export default function Home() {
     try {
       setLoading(true);
       let totalNewPoints = 0;
-      console.log(`Checking for ${address}`)
+
 
       totalNewPoints += await getAllUserTransactionCounts(address);
       totalNewPoints += await LiquidLauchHolder(address);
@@ -204,12 +204,11 @@ export default function Home() {
 
     if (res.status === 200 || res.status === 201) {
       const resData = res.data;
+      console.log(resData)
       const referalPoint = resData.refPoint;
       const x = resData.x || 0;
       const tg = resData.tg || 0;
-
       const total = x + tg;
-
       return referalPoint + total;
     }
   } catch (err) {
