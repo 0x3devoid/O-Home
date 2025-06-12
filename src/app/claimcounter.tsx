@@ -1,3 +1,4 @@
+// CountdownTimer.tsx
 import React, { useEffect, useState } from 'react';
 
 interface TimeLeft {
@@ -10,7 +11,7 @@ interface TimeLeft {
 const CountdownTimer: React.FC = () => {
   const calculateTimeLeft = (): TimeLeft => {
     let endDate: Date;
-    endDate = new Date("2025-06-16T09:51:12.274Z");
+    endDate = new Date("2025-06-19T00:00:00.274Z");
 
     const now = new Date();
     const difference = endDate.getTime() - now.getTime();
@@ -37,10 +38,9 @@ const CountdownTimer: React.FC = () => {
 
   return (
     <div className="text-center py-5">
-      <p>Countdown</p>
       <div className="flex justify-center">
-        <p className="border border-[#1EEDD8] rounded-2xl p-4 px-7 text-[10px]">
-          {`${timeLeft.days}Days: ${timeLeft.hours}Hours: ${timeLeft.minutes}Mins: ${timeLeft.seconds}Secs`}
+        <p className="border font-semibold border-[#1EEDD8] rounded-2xl p-2 px-7 text-[16px]">
+         Claim In {`${timeLeft.days}d: ${timeLeft.hours}h: ${timeLeft.minutes}m`}
         </p>
       </div>
     </div>

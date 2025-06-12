@@ -17,7 +17,7 @@ export default function Page() {
         />
       </div>
     }>
-      <Home />
+      <Home/>
     </Suspense>
   );
 }
