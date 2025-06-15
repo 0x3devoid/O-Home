@@ -459,7 +459,7 @@ export default function Snapshot() {
                     </div>
                 )}
 
-                {renderClaimButton()}
+                {/* {renderClaimButton()} */}
 
 
 
