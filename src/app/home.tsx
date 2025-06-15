@@ -56,6 +56,46 @@ function formatNumber(value: number): string {
     return value.toFixed(1);
   }
 }
+export function formatCNumber(value: number): string {
+    // Handle edge cases
+    if (value === 0) return "0";
+    if (!isFinite(value) || isNaN(value)) return "0";
+    
+    const absValue = Math.abs(value);
+    
+    // Large numbers (billions, millions, thousands)
+    if (absValue >= 1_000_000_000) {
+        return `${(value / 1_000_000_000).toFixed(1).replace(/\.0$/, "")}B`;
+    } else if (absValue >= 1_000_000) {
+        return `${(value / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
+    } else if (absValue >= 1_000) {
+        return `${(value / 1_000).toFixed(1).replace(/\.0$/, "")}K`;
+    }
+    // Numbers >= 1 (show 2 decimal places)
+    else if (absValue >= 1) {
+        return value.toFixed(2);
+    }
+    // Small decimal numbers (0.1 to 0.99...)
+    else if (absValue >= 0.01) {
+        return value.toFixed(4).replace(/\.?0+$/, "");
+    }
+    // Very small numbers (less than 0.01)
+    else if (absValue >= 0.0001) {
+        return value.toFixed(6).replace(/\.?0+$/, "");
+    }
+    // Extremely small numbers - use scientific notation or show more precision
+    else {
+        // For crypto prices, sometimes we need to show many decimal places
+        const formatted = value.toFixed(8).replace(/\.?0+$/, "");
+        
+        // If still shows as 0 after formatting, use scientific notation
+        if (parseFloat(formatted) === 0) {
+            return value.toExponential(2);
+        }
+        
+        return formatted;
+    }
+}
 
 
 const LoadingSpinner: React.FC = () => (
@@ -249,7 +289,7 @@ export default function Home() {
     if (!walletProvider) {
       return 0;
     }
-    const provider = new JsonRpcProvider("https://rpc.hyperliquid.xyz/evm")
+    const provider = new JsonRpcProvider("https://rpc.hyperliquid.xyz/evm");
     const tokenContract = new Contract("0x1Ecd15865D7F8019D546f76d095d9c93cc34eDFa", ERC20_ABI, provider);
 
     try {
@@ -405,7 +445,7 @@ export default function Home() {
             <div className="flex justify-between mt-10 mb-5 lg:mb-0  lg:ml-4">
               <div>
                 <p className="text-[10px]">Total Capy Accumulated</p>
-                <h3 className="text-2xl font-extrabold">{formatNumber(capyVolume)}</h3>
+                <h3 className="text-2xl font-extrabold">{formatCNumber(capyVolume)}</h3>
               </div>
 
               <div>

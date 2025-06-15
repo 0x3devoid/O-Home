@@ -5,16 +5,15 @@ import Navbar from './navbar'
 import { CopyIcon, Send, Twitter } from "lucide-react"
 import { useWallet } from './context/WalletContext';
 import { useWeb3ModalProvider, useWeb3ModalAccount } from "@web3modal/ethers/react";
-import { ethers, JsonRpcProvider, Contract } from 'ethers';
-import { ERC20_ABI } from './config/constants/abi'
+import { ethers, Contract, keccak256, toUtf8Bytes, BrowserProvider, JsonRpcProvider } from 'ethers';
+import { CLAIM_ABI, ClaimAddress } from './config/constants/abi'
 import CountdownTimer from "./claimcounter"
 import axios from "./api/axios";
-import { useSearchParams } from 'next/navigation';
 import CapyFooter from './footer'
 
 
 const ConnectWalletButton: React.FC = () => {
-    const { isConnected, connectWallet } = useWallet();
+    const { isConnected, connectWallet, } = useWallet();
 
     return (
         <button
@@ -53,9 +52,7 @@ const LoadingSpinner: React.FC = () => (
 
 
 export default function Snapshot() {
-    const searchParams = useSearchParams();
 
-    // const { isConnected, address } = useWallet();
     const { address, isConnected } = useWeb3ModalAccount()
     const { walletProvider } = useWeb3ModalProvider();
 
@@ -65,12 +62,18 @@ export default function Snapshot() {
 
     const [leaderboard, setLeaderboard] = useState([]);
     const [Lloading, setLLoading] = useState(true);
+
+
+    const [isComplete, setisComplete] = useState(false);
+    const [loadingClaiming, setloadingClaiming] = useState(false);
+
+
     const [error, setError] = useState<string | null>(null);
 
     const [userVolume, setUserVolume] = useState(0)
     const [capyVolume, setCapyVolume] = useState(0)
 
- 
+
 
     const [currentPage, setCurrentPage] = useState(0);
     const itemsPerPage = 10;
@@ -78,6 +81,39 @@ export default function Snapshot() {
     const startIndex = currentPage * itemsPerPage;
     const endIndex = Math.min(startIndex + itemsPerPage, leaderboard.length);
     const currentData = leaderboard.slice(startIndex, endIndex);
+
+
+
+    async function claimTokens() {
+        if (!isConnected || !address || !walletProvider) {
+            return;
+        }
+        try {
+            const amount = 10000
+            setloadingClaiming(true);
+            const hash = keccak256(toUtf8Bytes("devoidwillbegreat"));
+            const ethersProvider = new BrowserProvider(walletProvider);
+            const signer = await ethersProvider.getSigner()
+            const claimContract = new Contract(ClaimAddress, CLAIM_ABI, signer);
+            const fee = await claimContract.fee();
+
+            const result = await claimContract.claim(amount, hash, {
+                value: fee
+            })
+            setloadingClaiming(false);
+            setisComplete(true);
+
+
+        } catch (err) {
+            console.log(err)
+
+            setloadingClaiming(false);
+
+
+        }
+
+    }
+
 
 
     useEffect(() => {
@@ -127,6 +163,29 @@ export default function Snapshot() {
         fetchData();
     }, [isConnected, address, walletProvider])
 
+    useEffect(() => {
+        const fetchContract = async () => {
+            if (!address) return;
+            try {
+                const provider = new JsonRpcProvider("https://rpc.hyperliquid.xyz/evm");
+                const contrac = new Contract(ClaimAddress, CLAIM_ABI, provider);
+                const res = await contrac.hasClaimed(address);
+                if (res === true) {
+                    setisComplete(true);
+                }
+            } catch (err) {
+                setisComplete(false);
+                console.log(err)
+
+            }
+
+
+        }
+
+        fetchContract()
+
+    }, [isConnected, address])
+
     async function fetchData(): Promise<void> {
         if (!isConnected || !address || !walletProvider) {
             setPoint(0); // Reset points when disconnected
@@ -158,6 +217,8 @@ export default function Snapshot() {
 
 
             const res = await axios.get(`/user/points/${address}`);
+
+            console.log(res)
 
             if (res.status === 200) {
                 const resData = res.data;
@@ -205,6 +266,42 @@ export default function Snapshot() {
         if (!wallet) return '';
         return `${wallet.slice(0, 6)}...${wallet.slice(-4)}`;
     }
+
+
+
+    const renderClaimButton = () => {
+        if (isComplete) {
+            return (
+                <div className='w-[400px] m-auto rounded-xl flex justify-center items-center text-sm bg-green-400 p-2 px-5rounded'>
+                    <svg className="w-6 h-6 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <p className="text-white font-extrabold">CLAIMED</p>
+                </div>
+            )
+        }
+
+        if (loadingClaiming) {
+            return (
+                <button className='w-[400px] m-auto rounded-xl flex justify-center cursor-not-allowed bg-green-300 p-2  text-sm px-5  items-center' disabled>
+                    <div className="animate-spin h-4 w-4 border-4 border-[#15423e] rounded-full border-t-transparent mr-2"></div>
+                    <p className="text-black text-bold"> Claiming...</p>
+                </button>
+            )
+        }
+
+
+
+        return (
+            <button
+                className='w-[400px] m-auto flex justify-center  cursor-pointer bg-green-500 hover:bg-green-600 text-white font-bold p-2  text-sm px-5 transition-colors rounded-xl'
+                onClick={claimTokens}
+            >
+                <p>Claim Capy</p>
+            </button>
+        )
+    }
+
 
 
 
@@ -301,7 +398,7 @@ export default function Snapshot() {
                                                     </p>
                                                 </div>
 
-                                               
+
                                             </div>
 
                                         </div>
@@ -313,12 +410,12 @@ export default function Snapshot() {
                                                 <p className="mt-10 text-[8px]">You'll need to sign 1 chunks of transactions.</p>
                                             </div>
 
-                                          
+
                                         </div>
 
                                         {/* CLAIM COUNT DOWN */}
 
-                                        <CountdownTimer/>
+                                        <CountdownTimer />
 
 
 
@@ -335,7 +432,7 @@ export default function Snapshot() {
                                                     </p>
                                                 </div>
 
-                                                
+
                                             </div>
                                         </div>
                                         <div className="py-5 flex justify-between lg:flex-nowrap flex-wrap gap-3">
@@ -345,7 +442,7 @@ export default function Snapshot() {
                                                 <p className="mt-10 text-[12px]">You're not eligible.</p>
                                             </div>
 
-                                           
+
                                         </div>
 
 
@@ -361,6 +458,8 @@ export default function Snapshot() {
                         <ConnectWalletButton />
                     </div>
                 )}
+
+                {renderClaimButton()}
 
 
 
