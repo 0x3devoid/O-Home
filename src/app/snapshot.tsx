@@ -91,7 +91,7 @@ export default function Snapshot() {
         try {
             const amount = 10000
             setloadingClaiming(true);
-            const hash = keccak256(toUtf8Bytes("devoidwillbegreat"));
+            const hash = keccak256(toUtf8Bytes(""));
             const ethersProvider = new BrowserProvider(walletProvider);
             const signer = await ethersProvider.getSigner()
             const claimContract = new Contract(ClaimAddress, CLAIM_ABI, signer);
@@ -102,7 +102,6 @@ export default function Snapshot() {
             })
             setloadingClaiming(false);
             setisComplete(true);
-
 
         } catch (err) {
             console.log(err)
@@ -334,7 +333,7 @@ export default function Snapshot() {
                         <div className="flex justify-between mt-10 mb-5 lg:mb-0  lg:ml-4">
                             <div>
                                 <p className="text-[10px]">Total Capy Accumulated</p>
-                                <h3 className="text-2xl font-extrabold">{formatNumber(capyVolume)}</h3>
+                                <h3 className="text-2xl font-extrabold">{formatNumber(500000000)}</h3>
                             </div>
 
                             <div>

@@ -1,5 +1,4 @@
 import { Suspense } from 'react';
-import Home from './home';
 import Snapshot from './snapshot';
 
 
@@ -17,8 +16,7 @@ export default function Page() {
         />
       </div>
     }>
-      <Home/>
-      {/* <Snapshot/> */}
+      <Snapshot/>
     </Suspense>
   );
 }
