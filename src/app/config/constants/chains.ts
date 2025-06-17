@@ -3,7 +3,7 @@ export const HYPE_MAINNET = {
     chainId: 999,
     name: 'HYPER EVM',
     currency: 'HEVM',
-    explorerUrl: '',
+    explorerUrl: 'https://www.hyperscan.com',
     rpcUrl: 'https://rpc.hyperliquid.xyz/evm'
 }
 

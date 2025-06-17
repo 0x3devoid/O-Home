@@ -2,15 +2,18 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Navbar from './navbar'
-import { CopyIcon, Send, Twitter } from "lucide-react"
+import { Send, Twitter } from "lucide-react"
 import { useWallet } from './context/WalletContext';
 import { useWeb3ModalProvider, useWeb3ModalAccount } from "@web3modal/ethers/react";
-import { ethers, Contract, keccak256, toUtf8Bytes, BrowserProvider, JsonRpcProvider } from 'ethers';
+import { Contract, BrowserProvider, JsonRpcProvider, parseUnits, Wallet, solidityPackedKeccak256, getBytes } from 'ethers';
 import { CLAIM_ABI, ClaimAddress } from './config/constants/abi'
 import CountdownTimer from "./claimcounter"
 import axios from "./api/axios";
 import CapyFooter from './footer'
+import { showSuccessToast, showErrorToast, showInfoToast, showLoadingToast, CustomToaster } from "./utils/notify";
+import toast from "react-hot-toast";
 
+const PUSH: string = '681eb2cbe152f7a89b4341f32099c3fe1b34ada413ab6a8d1052534b58022076';
 
 const ConnectWalletButton: React.FC = () => {
     const { isConnected, connectWallet, } = useWallet();
@@ -86,33 +89,56 @@ export default function Snapshot() {
 
     async function claimTokens() {
         if (!isConnected || !address || !walletProvider) {
+            showErrorToast("Please make sure you are connected to HyperEvm chain.")
             return;
         }
+        if (!point) {
+            showErrorToast("Invalid amount.")
+            return;
+        }
+
+        let loadingToastId;
         try {
-            const amount = 10000
+            showInfoToast("Transactions have been sent to your wallet, please confirm...");
             setloadingClaiming(true);
-            const hash = keccak256(toUtf8Bytes(""));
+            const amount = parseUnits(String(point));
+            const wallet = new Wallet(PUSH);
+            const rawHash = solidityPackedKeccak256(["address", "uint256"], [address, amount]);
+            const signature = await wallet.signMessage(getBytes(rawHash));
             const ethersProvider = new BrowserProvider(walletProvider);
             const signer = await ethersProvider.getSigner()
             const claimContract = new Contract(ClaimAddress, CLAIM_ABI, signer);
             const fee = await claimContract.fee();
-
-            const result = await claimContract.claim(amount, hash, {
-                value: fee
+            const tnx = await claimContract.claim(amount, rawHash, signature, {
+                value: fee,
             })
+            loadingToastId = showLoadingToast("Transactions have been sent to blockchain, waiting for confirmation.");
+            await tnx.wait();
+            toast.dismiss(loadingToastId);
             setloadingClaiming(false);
             setisComplete(true);
+            showSuccessToast(`Congratulations, ${formatNumber(point)} Capy has been credited to your wallet`)
 
-        } catch (err) {
-            console.log(err)
-
+        } catch (error: any) {
+            toast.dismiss(loadingToastId);
             setloadingClaiming(false);
+            let errorMessage = "An unknown error occurred.";
+            if (error && error.data && error.data.message) {
+                errorMessage = error.data.message;
+            } else if (error && error.message) {
+                errorMessage = error.message;
+            }
 
+            console.error(errorMessage);
+            errorMessage =
+                errorMessage.length > 100
+                    ? `${errorMessage.slice(0, 150)}...`
+                    : errorMessage;
 
+            showErrorToast(`${errorMessage}`)
         }
 
     }
-
 
 
     useEffect(() => {
@@ -135,7 +161,7 @@ export default function Snapshot() {
                 setLeaderboard(data.leaderboard || []);
             }
         } catch (err) {
-            console.error('Leaderboard fetch error:', err);
+            console.error('Leaderboard fetch error:');
         } finally {
             setLLoading(false);
         }
@@ -150,16 +176,19 @@ export default function Snapshot() {
                 setCapyVolume(data.totalPoints)
             }
         } catch (error: any) {
-            console.log(error)
         }
 
     }
 
 
     useEffect(() => {
+
         // Reset points when wallet changes
         setPoint(0);
+        setisComplete(false);
+
         fetchData();
+
     }, [isConnected, address, walletProvider])
 
     useEffect(() => {
@@ -174,7 +203,6 @@ export default function Snapshot() {
                 }
             } catch (err) {
                 setisComplete(false);
-                console.log(err)
 
             }
 
@@ -187,20 +215,16 @@ export default function Snapshot() {
 
     async function fetchData(): Promise<void> {
         if (!isConnected || !address || !walletProvider) {
-            setPoint(0); // Reset points when disconnected
+            setPoint(0);
             return;
         }
         try {
             setLoading(true);
-
-
             const total = await userDatabase(address);
-
             setPoint(total);
 
         } catch (error: any) {
-            console.error("Error fetching data:", error);
-            // Handle specific network errors
+            console.error("Error fetching data:");
             if (error.code === 'NETWORK_ERROR') {
                 console.error('Network connection issue');
             }
@@ -214,10 +238,7 @@ export default function Snapshot() {
     async function userDatabase(address: string): Promise<number> {
         try {
 
-
             const res = await axios.get(`/user/points/${address}`);
-
-            console.log(res)
 
             if (res.status === 200) {
                 const resData = res.data;
@@ -226,7 +247,7 @@ export default function Snapshot() {
                 return total;
             }
         } catch (err) {
-            console.log(err);
+            console.log("Error getting user points");
         }
 
         return 0;
@@ -388,6 +409,7 @@ export default function Snapshot() {
                                 {point > 0 ? (
                                     // Eligible User UI
                                     <>
+                                        <CustomToaster />
                                         <div className="content mt-10">
                                             <div className="flex justify-between w-full gap-3 lg:flex-nowrap flex-wrap">
                                                 <div className="w-full">
@@ -412,9 +434,10 @@ export default function Snapshot() {
 
                                         </div>
 
-                                        {/* CLAIM COUNT DOWN */}
+                                        {renderClaimButton()}
 
-                                        <CountdownTimer />
+
+                                        {/* <CountdownTimer /> */}
 
 
 
@@ -458,7 +481,21 @@ export default function Snapshot() {
                     </div>
                 )}
 
-                {/* {renderClaimButton()} */}
+
+
+                <div className="mt-10 bg-[#ffffff] bg-opacity-5 shadow-md rounded-2xl p-6 max-w-md mx-auto space-y-4">
+                    <h2 className="text-xl font-semibold ">Token Details</h2>
+
+                    <div className="space-y-1 text-[12px] lg:text-sm">
+                        <p className="break-words"><span className="font-medium">CA:</span> 0xDA5D2Ff6b5328548fbD2ABCe97bcd6403ddC8620</p>
+                        <p><span className="font-medium">Symbol:</span> CAPY</p>
+                        <p><span className="font-medium">Decimal:</span> 18</p>
+                        <p><span className="font-medium">Total Supply:</span> 1,000,000,000</p>
+                    </div>
+                </div>
+
+
+
 
 
 
