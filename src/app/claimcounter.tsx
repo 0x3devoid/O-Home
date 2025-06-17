@@ -11,7 +11,7 @@ interface TimeLeft {
 const CountdownTimer: React.FC = () => {
   const calculateTimeLeft = (): TimeLeft => {
     let endDate: Date;
-    endDate = new Date("2025-06-17T12:00:00.274Z");
+    endDate = new Date("2025-06-22T12:00:00.274Z");
 
     const now = new Date();
     const difference = endDate.getTime() - now.getTime();
@@ -40,7 +40,7 @@ const CountdownTimer: React.FC = () => {
     <div className="text-center py-5">
       <div className="flex justify-center">
         <p className="border font-semibold border-[#1EEDD8] rounded-2xl p-2 px-7 text-[16px]">
-         Claim In {`${timeLeft.days}d: ${timeLeft.hours}h: ${timeLeft.minutes}m`}
+         Token Launches In {`${timeLeft.days}d: ${timeLeft.hours}h: ${timeLeft.minutes}m`}
         </p>
       </div>
     </div>

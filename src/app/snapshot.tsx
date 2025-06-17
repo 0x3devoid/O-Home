@@ -437,7 +437,7 @@ export default function Snapshot() {
                                         {renderClaimButton()}
 
 
-                                        {/* <CountdownTimer /> */}
+                                        <CountdownTimer />
 
 
 
