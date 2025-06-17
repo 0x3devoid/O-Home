@@ -11,7 +11,7 @@ interface TimeLeft {
 const CountdownTimer: React.FC = () => {
   const calculateTimeLeft = (): TimeLeft => {
     let endDate: Date;
-    endDate = new Date("2025-06-22T12:00:00.274Z");
+    endDate = new Date("2025-06-23T12:00:00.274Z");
 
     const now = new Date();
     const difference = endDate.getTime() - now.getTime();
