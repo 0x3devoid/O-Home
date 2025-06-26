@@ -4,8 +4,8 @@ import "./globals.css";
 const aldrich = Aldrich({ weight: '400', subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "O-HOME",
-  description: "O-HOME is here! Home for every human",
+  title: "O-HOMES",
+  description: "O-Homes is your trusted platform for leasing, renting, and buying apartments—making the process easier, faster, and more reliable.",
 };
 
 export default function RootLayout({
