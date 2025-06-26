@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { Aldrich } from "next/font/google";
 import "./globals.css";
-import { WalletProvider } from './context/WalletContext'
 const aldrich = Aldrich({ weight: '400', subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "CAPY",
-  description: "$CAPY is live! Calling All Friends On HyperEvm.",
+  title: "O-HOME",
+  description: "O-HOME is here! Home for every human",
 };
 
 export default function RootLayout({
@@ -19,10 +18,8 @@ export default function RootLayout({
       <body
         className="antalized p-4"
       >
-        <WalletProvider>
-          
+
           {children}
-        </WalletProvider>
       </body>
     </html>
   );
