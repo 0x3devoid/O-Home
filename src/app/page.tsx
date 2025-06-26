@@ -1,8 +1,10 @@
-import CreateAccount from "./create"
-
+'use client'
+import Home from "./home"
 
 export default function Page() {
   return (
-    <CreateAccount/>
+    <>
+    <Home/>
+    </>
   );
 }
