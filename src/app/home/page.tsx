@@ -5,22 +5,22 @@ import Home from './home'
 
 const page = () => {
   return (
-    <div className="grid grid-cols-4 md:grid-cols-8 h-screen">
-      {/* Navbar */}
-      <div className="col-span-1 md:col-span-1">
-        <Navbar />
-      </div>
+    <div className="flex h-screen">
+            {/* Navbar - Fixed width on mobile, responsive on desktop */}
+            <div className="w-16 md:w-64 flex-shrink-0">
+                <Navbar />
+            </div>
 
-      {/* Home */}
-      <div className="col-span-3 md:col-span-4 ">
-        <Home />
-      </div>
+            {/* Home - Takes remaining space */}
+            <div className="flex-1 min-w-0">
+                <Home />
+            </div>
 
-      {/* NotificationBar */}
-      <div className="hidden md:block md:col-span-3 ">
-        <NotificationBar />
-      </div>
-    </div>
+            {/* NotificationBar - Hidden on mobile, fixed width on desktop */}
+            <div className="hidden md:block md:w-80 flex-shrink-0">
+                <NotificationBar />
+            </div>
+        </div>
 
   )
 }

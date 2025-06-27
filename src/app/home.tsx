@@ -17,7 +17,7 @@ const Home = () => {
 
   return (
 
-    <div className='w-[300px] m-auto text-center py-3'>
+    <div className='w-[300px] m-auto text-center mt-[100px] md:mt-0'>
 
     <div className='flex justify-center'>
         <Image src="/images/logo.png" alt="." width={50} height={50} />
