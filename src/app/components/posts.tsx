@@ -14,9 +14,9 @@ const Posts = () => {
                     <div className='w-full flex items-start justify-between'>
 
                         <div className='flex items-start justify-start gap-1 mb-2'>
-                            <h3 className='font-extrabold'>Devoid</h3>
-                            <h3 className='text-[#808080]'>@Dev_Bot</h3>
-                            <h3 className='text-[#808080] flex'> <DotIcon className='w-5 h-5' /> 4h</h3>
+                            <h3 className='font-extrabold text-sm md:text-lg'>Devoid</h3>
+                            <h3 className='text-[#808080] text-sm md:text-lg'>@Dev_Bot</h3>
+                            <h3 className='text-[#808080] flex text-sm md:text-lg'> <DotIcon className='w-5 h-5' /> 4h</h3>
                         </div>
 
 

@@ -17,11 +17,11 @@ const PostForm = () => {
 
                     <div className='flex items-center justify-between mt-2 pt-3 border-t border-[#808080]'>
                         <div className='flex items-center space-x-2 '>
-                            <button className='text-blue-500 '><ImageIcon className='w-3 h-3 md:w-5 md:h-5' /></button>
-                            <button className='text-blue-500 '><VideoIcon className='w-3 h-3 md:w-5 md:h-5' /></button>
-                            <button className='text-blue-500 '><LocateIcon className='w-3 h-3 md:w-5 md:h-5' /></button>
-                            <button className='text-blue-500 '><SmileIcon className='w-3 h-3 md:w-5 md:h-5' /></button>
-                            <button className='text-blue-500 '><Calendar1 className='w-3 h-3 md:w-5 md:h-5' /></button>
+                            <button className='text-blue-500 '><ImageIcon className='w-5 h-5' /></button>
+                            <button className='text-blue-500 '><VideoIcon className='w-5 h-5' /></button>
+                            <button className='text-blue-500 '><LocateIcon className='w-5 h-5' /></button>
+                            <button className='text-blue-500 '><SmileIcon className='w-5 h-5' /></button>
+                            <button className='text-blue-500 '><Calendar1 className='w-5 h-5' /></button>
                         </div>
                         <button className='px-4 py-2  bg-[#808080] rounded-3xl text-[12px] md:text-sm text-[#000] font-extrabold'>Post</button>
                     </div>
