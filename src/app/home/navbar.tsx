@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { Home, Search, MessageSquare, User, Settings, Bell } from 'lucide-react'
 const Navbar = () => {
     return (
-        <div className='h-full overflow-y-auto border-r md:border-[#808080]'>
+        <div className='h-full overflow-y-auto border-r border-[#808080]'>
             <div className='w-[38px] md:w-full flex flex-col md:justify-end md:items-end gap-6 p-2 md:p-4'>
                 <div className='cursor-pointer'>
                            <div className='flex justify-center'>

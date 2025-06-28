@@ -48,7 +48,7 @@ const Home = () => {
                 {/* Add more content to demonstrate scrolling */}
                 <div className='space-y-6'>
                     {Array.from({ length: 20 }, (_, i) => (
-                        <div key={i} className='p-2 border rounded-lg'>
+                        <div key={i} className='p-2 border border-[#808080] rounded-lg'>
                             <h3 className='font-semibold mb-2'>Property Listing {i + 1}</h3>
                             <p className=''>
                                 Beautiful {Math.floor(Math.random() * 4) + 1}-bedroom apartment in prime location.
