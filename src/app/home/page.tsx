@@ -7,7 +7,7 @@ const page = () => {
   return (
     <div className="flex h-screen">
             {/* Navbar - Fixed width on mobile, responsive on desktop */}
-            <div className="w-10 md:w-20 flex-shrink-0">
+            <div className="w-10 md:w-40 flex-shrink-0">
                 <Navbar />
             </div>
 
