@@ -1,10 +1,31 @@
+"use client"
 import React from 'react'
 import { Search, MoreHorizontal } from 'lucide-react'
 import Image from 'next/image'
 
 const SearchBar = () => {
     return (
-        <div className='pl-2'>
+        <div className='pl-2 h-full mobile-no-scrollbar md:border-l md:border-[#8899]'>
+
+               <style jsx>{`
+                .mobile-no-scrollbar {
+                    overflow-y: auto;
+                    scrollbar-width: none; /* Firefox */
+                    -ms-overflow-style: none; /* Internet Explorer 10+ */
+                }
+                .mobile-no-scrollbar::-webkit-scrollbar {
+                    display: none; /* Safari and Chrome */
+                }
+                @media (min-width: 768px) {
+                    .mobile-no-scrollbar {
+                        scrollbar-width: auto;
+                        -ms-overflow-style: auto;
+                    }
+                    .mobile-no-scrollbar::-webkit-scrollbar {
+                        display: block;
+                    }
+                }
+            `}</style>
 
             <div className='border border-[#8899] rounded-3xl p-2 px-2'>
                 <div className='flex items-center justify-center'>

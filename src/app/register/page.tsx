@@ -19,28 +19,30 @@ const page = () => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
-
-
     const handleForm = (e: React.FormEvent) => {
         e.preventDefault();
-
         showSuccessToast("Account created successfully!");
-
         window.location.href = '/home';
-
     }
+
     return (
         <>
 
-            <div className='w-[300px] m-auto text-center mt-[100px] md:mt-0'>
+                <div className='md:flex justify-between items-center gap-5 md:w-[700px] m-auto mt-[100px] md:mt-10'>
+              
+                  <div className='hidden md:flex justify-center'>
+                      <Image src="/images/logo.png" alt="." width={150} height={150} />
+                  </div>
+              
+                   <div className='flex md:hidden justify-center'>
+                      <Image src="/images/logo.png" alt="." width={50} height={50} />
+                  </div>
+              
 
-                <div className='flex justify-center'>
-                    <Image src="/images/logo.png" alt="." width={50} height={50} />
-                </div>
-                <h1 className='mt-10 text-start text-lg font-extrabold'>Create your account</h1>
+              <div>
+                   <h1 className='mt-10 text-start text-lg font-extrabold'>Create your account</h1>
 
-
-                <form onSubmit={handleForm}>
+                <form onSubmit={handleForm} className="md:w-[400px]">
                     <input
                         type="text"
                         name="name"
@@ -93,7 +95,7 @@ const page = () => {
                         Create Account
                     </button>
                 </form>
-
+              </div>
 
             </div>
 

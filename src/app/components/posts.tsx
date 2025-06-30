@@ -1,5 +1,6 @@
 import React from 'react'
-import { UserCircleIcon, BookmarkIcon, DotIcon, MessageCircle, HeartIcon, BarChart2, MoreHorizontal } from 'lucide-react'
+import { BookmarkIcon, DotIcon, MessageCircle, HeartIcon, BarChart2, MoreHorizontal } from 'lucide-react'
+import Image from 'next/image'
 
 
 const Posts = () => {
@@ -7,9 +8,9 @@ const Posts = () => {
         <div className='border-b border-[#8899] w-full'>
             <div className='w-full flex justify-between items-start gap-3 mt-5 mb-3'>
                 <div className='flex-shrink-0 ml-3'>
-                    <UserCircleIcon className='w-5 h-5 md:w-8 md:h-8 text-gray-500' />
-                </div>
+                    <Image src={"/images/cat_nft.jpg"} className='rounded-full' width={40} height={40} alt='.' />
 
+                </div>
                 <div className='flex-1'>
                     <div className='w-full flex items-start justify-between'>
 
@@ -51,22 +52,18 @@ const Posts = () => {
                         </ul>
 
                         <style jsx>{`
-  .feature-list {
-    list-style-type: disc;
-    padding-left: 1.5rem;
-    margin-top: .7rem;
-  }
-  .feature-list li {
-    margin-bottom: 0.65rem;
-    line-height: 1.6;
-    font-size: 10px;
-  }
-`}</style>
-
-
-
-
-
+                    .feature-list {
+                        list-style-type: disc;
+                        padding-left: 1.5rem;
+                        margin-top: .7rem;
+                    }
+                    .feature-list li {
+                        margin-bottom: 0.65rem;
+                        line-height: 1.6;
+                        font-size: 10px;
+                    }
+                    `}
+                        </style>
 
 
                         <p>

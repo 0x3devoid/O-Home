@@ -1,0 +1,25 @@
+import React from 'react'
+import Navbar from '../home/navbar'
+import SearchBar from '../profile/search'
+import Setting from './setting'
+
+const page = () => {
+  return (
+    <div className="flex h-screen">
+            <div className="w-10 md:w-40 flex-shrink-0">
+                <Navbar />
+            </div>
+
+            <div className="flex-1 min-w-0">
+                <Setting />
+            </div>
+
+            <div className="hidden md:block md:w-80 flex-shrink-0">
+                <SearchBar />
+            </div>
+        </div>
+
+  )
+}
+
+export default page

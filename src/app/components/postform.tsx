@@ -1,12 +1,16 @@
 "use client"
 import React from 'react'
-import { UserCircleIcon, ImageIcon, VideoIcon, LocateIcon, SmileIcon, Calendar1 } from 'lucide-react'
+import {  ImageIcon, VideoIcon, LocateIcon, SmileIcon, Calendar1 } from 'lucide-react'
+import Image from 'next/image';
+
+
 const PostForm = () => {
     return (
         <div className='border-b border-t border-[#8899] w-full'>
             <div className='w-full flex justify-between items-start gap-3 mt-5 mb-3'>
-                <div className='flex-shrink-0 ml-1'>
-                    <UserCircleIcon className='w-5 h-5 md:w-8 md:h-8 text-gray-500' />
+                <div className='flex-shrink-0 ml-3'>
+                                      <Image src={"/images/cat_nft.jpg"} className='rounded-full' width={50} height={50} alt='.' />
+                  
                 </div>
 
                 <div className='flex-1'>

@@ -17,13 +17,18 @@ const Home = () => {
 
   return (
 
-    <div className='w-[300px] m-auto text-center mt-[100px] md:mt-0'>
+    <div className='md:flex justify-between items-center gap-5 md:w-[700px] m-auto mt-[100px] md:mt-10'>
 
-    <div className='flex justify-center'>
+    <div className='hidden md:flex justify-center'>
+        <Image src="/images/logo.png" alt="." width={150} height={150} />
+    </div>
+
+     <div className='flex md:hidden justify-center'>
         <Image src="/images/logo.png" alt="." width={50} height={50} />
     </div>
 
-      <h2 className='mt-10 text-start text-lg font-extrabold'>Create an account</h2>
+      <div>
+        <h2 className='mt-10 text-start text-lg font-extrabold'>Create an account</h2>
 
       <button className='w-full flex justify-center gap-3 rounded-3xl p-2 px-5 bg-[#fff] text-[#000] mt-5 cursor-pointer text-sm font-thin
       '>
@@ -63,6 +68,7 @@ const Home = () => {
       <button className='w-full rounded-3xl p-2 px-5 bg-[#fff] text-[#8CCDEB] mt-3 cursor-pointer text-sm font-thin' onClick={handleSignIn}>
         Sign in
       </button>
+      </div>
     </div>
   )
 }

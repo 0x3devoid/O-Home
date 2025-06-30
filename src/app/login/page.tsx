@@ -38,13 +38,19 @@ const page = () => {
     return (
       <>
       
-        <div className='w-[300px] m-auto text-center mt-[100px] md:mt-0'>
+        <div className='md:flex justify-between items-center gap-5 md:w-[700px] m-auto mt-[100px] md:mt-10'>
+    
+        <div className='hidden md:flex justify-center'>
+            <Image src="/images/logo.png" alt="." width={150} height={150} />
+        </div>
+    
+         <div className='flex md:hidden justify-center'>
+            <Image src="/images/logo.png" alt="." width={50} height={50} />
+        </div>
 
-            <div className='flex justify-center'>
-                <Image src="/images/logo.png" alt="." width={50} height={50} />
-            </div>
+            <div>
 
-            {!next &&
+                {!next &&
 
                 <>
             <h1 className='mt-10 text-start text-lg font-extrabold'>Sign in to H</h1>
@@ -106,6 +112,7 @@ const page = () => {
             <p className='text-gray-500 text-[14px] mt-10 text-start'>
                 Don't have an account? <span className='text-[#6f6de0] cursor-pointer' onClick={handleSignUp}>Sign Up</span>
             </p>
+                </div>
         </div>
 
     <Toaster/>
