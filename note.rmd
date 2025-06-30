@@ -1,8 +1,0 @@
-so i am having issue in styling these my front page
-
-everything works fine on desktop mode but on mobile device, there is an unwated spacing between the nav bar and home bar
-
-also lets make each bar scrollable, so they can scroll the navbar, homebar and notification bar seperatly without affecting each other
-
-in such away that, if the home bar is beein scrolled, it shouldnt be scrolling with other bars
-

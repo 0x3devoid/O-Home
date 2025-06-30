@@ -3,7 +3,7 @@ import React from 'react'
 
 const NotificationBar = () => {
   return (
-  <div className='h-full mobile-no-scrollbar md:border-l md:border-[#808080]'>
+  <div className='h-full mobile-no-scrollbar md:border-l md:border-[#8899]'>
             <style jsx>{`
                 .mobile-no-scrollbar {
                     overflow-y: auto;

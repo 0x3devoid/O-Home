@@ -6,6 +6,9 @@
   --background: #000000;
   --foreground: #171717;
   --family: 'Aldrich';
+  --urls: #1DA1F2;
+  --urls-hover: #0d8dd6;
+  --border: #8899;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -21,6 +24,7 @@ body {
   font-family: var(--family);
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 p{
   font-size: 12px;

@@ -25,18 +25,18 @@ const Home = () => {
 
       <h2 className='mt-10 text-start text-lg font-extrabold'>Create an account</h2>
 
-      <div className='w-full flex justify-center gap-3 rounded-3xl p-2 px-5 bg-[#fff] text-[#000] mt-5 cursor-pointer text-sm font-thin
+      <button className='w-full flex justify-center gap-3 rounded-3xl p-2 px-5 bg-[#fff] text-[#000] mt-5 cursor-pointer text-sm font-thin
       '>
         <FcGoogle size={20} />
         Sign up with Google
 
-      </div>
-      <div className='w-full flex justify-center gap-3 rounded-3xl p-2 px-5 bg-[#fff] text-[#000] mt-3 cursor-pointer text-sm font-thin'>
+      </button>
+      <button className='w-full flex justify-center gap-3 rounded-3xl p-2 px-5 bg-[#fff] text-[#000] mt-3 cursor-pointer text-sm font-thin'>
         <FaApple size={20} />
         Sign up with Apple
 
 
-      </div>
+      </button>
 
 
       <div className='flex justify-center mt-5'>
@@ -44,9 +44,9 @@ const Home = () => {
       </div>
 
 
-      <div className='w-full rounded-3xl p-2 px-5 bg-[#fff] text-[#000] mt-5 cursor-pointer text-sm font-thin' onClick={handleSignUp}>
+      <button className='w-full rounded-3xl p-2 px-5 bg-[#fff] text-[#000] mt-5 cursor-pointer text-sm font-thin' onClick={handleSignUp}>
         Create Account
-      </div>
+      </button>
 
       <div className='mt-3'>
 
