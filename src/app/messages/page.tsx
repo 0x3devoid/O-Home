@@ -1,11 +1,11 @@
 import React from 'react'
 import Navbar from '../home/navbar'
-import Profile from './profile'
-import SearchBar from './search'
+import SearchBar from '../profile/search'
+import SearchTab from './search'
 
 
 export const metadata = {
-  title: "Profile | H",
+  title: "Messages | H",
 };
 
 
@@ -17,7 +17,7 @@ const page = () => {
             </div>
 
             <div className="flex-1 min-w-0">
-                <Profile />
+                <SearchTab />
             </div>
 
             <div className="hidden lg:block lg:w-80 flex-shrink-0">

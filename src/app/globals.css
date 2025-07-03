@@ -26,6 +26,71 @@ body {
   padding: 0;
   box-sizing: border-box;
 }
-p{
+
+p {
   font-size: 12px;
+}
+
+.mobile-no-scrollbar {
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.mobile-no-scrollbar::-webkit-scrollbar {
+  display: none;
+  /* Chrome/Safari (mobile) */
+}
+
+.mobile-no-scrollbar-nav {
+  overflow-y: auto;
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* Internet Explorer 10+ */
+}
+
+.mobile-no-scrollbar-nav::-webkit-scrollbar {
+  display: none;
+  /* Safari and Chrome */
+}
+
+@media (min-width: 768px) {
+  .mobile-no-scrollbar {
+    scrollbar-width: thin;
+    /* Firefox (desktop) */
+    scrollbar-color: gray transparent;
+    /* thumb, track */
+    -ms-overflow-style: auto;
+  }
+
+  .mobile-no-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .mobile-no-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .mobile-no-scrollbar::-webkit-scrollbar-thumb {
+    background-color: gray;
+    border-radius: 4px;
+  }
+
+  .mobile-no-scrollbar-nav {
+    scrollbar-width: auto;
+    -ms-overflow-style: auto;
+  }
+
+  .mobile-no-scrollbar-nav::-webkit-scrollbar {
+    display: block;
+  }
+}
+
+@media (min-width: 1480px) {
+  .control-bigger-screen {
+    width: 1200px;
+    margin: auto;
+
+  }
 }

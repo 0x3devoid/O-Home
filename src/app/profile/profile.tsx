@@ -6,39 +6,7 @@ import MiniNav from './mininav'
 const Profile = () => {
     return (
         <div className='h-full mobile-no-scrollbar md:border-r border-[#8899] md:mr-2'>
-            <style jsx>{`
-                        .mobile-no-scrollbar {
-                            overflow-y: auto;
-                            scrollbar-width: none; /* Firefox (mobile) */
-                            -ms-overflow-style: none; /* IE10+ (mobile) */
-                        }
-
-                        .mobile-no-scrollbar::-webkit-scrollbar {
-                            display: none; /* Chrome/Safari (mobile) */
-                        }
-
-                        @media (min-width: 768px) {
-                            .mobile-no-scrollbar {
-                            scrollbar-width: thin; /* Firefox (desktop) */
-                            scrollbar-color: gray transparent; /* thumb, track */
-                            -ms-overflow-style: auto;
-                            }
-
-                            .mobile-no-scrollbar::-webkit-scrollbar {
-                            width: 8px;
-                            }
-
-                            .mobile-no-scrollbar::-webkit-scrollbar-track {
-                            background: transparent;
-                            }
-
-                            .mobile-no-scrollbar::-webkit-scrollbar-thumb {
-                            background-color: gray;
-                            border-radius: 4px;
-                            }
-                        }
-            `}</style>
-
+     
 
             <div className='flex justify-between items-center px-2'>
                 <div className='flex items-center gap-10'>

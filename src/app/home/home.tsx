@@ -1,57 +1,55 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import PostForm from '../components/postform'
-import MiniNav from '../components/mininav'
 import Posts from '../components/posts'
+
+const tabs = ['For you', 'Following', 'Properties',];
+
+
 const Home = () => {
+    const [activeTab, setActiveTab] = useState('For you');
+    const renderContent = () => {
+        switch (activeTab) {
+            case 'For you':
+                return <div className='space-y-6'>
+                    {Array.from({ length: 20 }, (_, i) => (
+                        <Posts />
+                    ))}
+                </div>;
+            case 'Following':
+                return <div className='text-center'>Trending properties now...</div>;
+            case 'Properties':
+                return <div className='text-center'>Available rentals here...</div>;
+          
+            default:
+                return null;
+        }
+    };
+
     return (
         <div className='h-full mobile-no-scrollbar '>
-            <style jsx>{`
-                        .mobile-no-scrollbar {
-                            overflow-y: auto;
-                            scrollbar-width: none; /* Firefox (mobile) */
-                            -ms-overflow-style: none; /* IE10+ (mobile) */
-                        }
 
-                        .mobile-no-scrollbar::-webkit-scrollbar {
-                            display: none; /* Chrome/Safari (mobile) */
-                        }
-
-                        @media (min-width: 768px) {
-                            .mobile-no-scrollbar {
-                            scrollbar-width: thin; /* Firefox (desktop) */
-                            scrollbar-color: gray transparent; /* thumb, track */
-                            -ms-overflow-style: auto;
-                            }
-
-                            .mobile-no-scrollbar::-webkit-scrollbar {
-                            width: 8px;
-                            }
-
-                            .mobile-no-scrollbar::-webkit-scrollbar-track {
-                            background: transparent;
-                            }
-
-                            .mobile-no-scrollbar::-webkit-scrollbar-thumb {
-                            background-color: gray;
-                            border-radius: 4px;
-                            }
-                        }
-            `}</style>
-
-
-            <MiniNav />
+            <div className="flex justify-between items-center mt-5 border-b border-[#8899]">
+                {tabs.map((tab) => (
+                    <button
+                        key={tab}
+                        onClick={() => setActiveTab(tab)}
+                        className={`text-center font-bold cursor-pointer p-2 w-full hover:bg-[#8899] `}
+                    >
+                        <p className="md:text-[16px]">{tab}</p>
+                        {activeTab === tab && (
+                            <p className="md:text-[16px] border-b-4 w-[60px] border-blue-500 rounded-3xl m-auto"></p>
+                        )}
+                    </button>
+                ))}
+            </div>
 
             <PostForm />
 
             <div className='space-y-4'>
+                {renderContent()}
 
-                {/* Add more content to demonstrate scrolling */}
-                <div className='space-y-6'>
-                    {Array.from({ length: 20 }, (_, i) => (
-                        <Posts />
-                    ))}
-                </div>
+
             </div>
         </div>
     )
