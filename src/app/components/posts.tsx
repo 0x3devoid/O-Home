@@ -41,30 +41,7 @@ const Posts = () => {
                         </p>
 
 
-                        <p>✨ Features Include:</p>
-
-                        <ul className="feature-list">
-                            <li>Spacious en-suite bedrooms</li>
-                            <li>Modern fitted kitchen with pantry</li>
-                            <li>Family lounge + BQ</li>
-                            <li>Ample parking space</li>
-                            <li>24/7 security & treated water</li>
-                        </ul>
-
-                        <style jsx>{`
-                    .feature-list {
-                        list-style-type: disc;
-                        padding-left: 1.5rem;
-                        margin-top: .7rem;
-                    }
-                    .feature-list li {
-                        margin-bottom: 0.65rem;
-                        line-height: 1.6;
-                        font-size: 10px;
-                    }
-                    `}
-                        </style>
-
+                   
 
                         <p>
                             Located in a serene, gated estate
