@@ -5,9 +5,9 @@ import { showSuccessToast } from '../utils/notify';
 import { Toaster } from 'react-hot-toast';
 
 
-export const metadata = {
-  title: "Registration | H",
-};
+// export const metadata = {
+//   title: "Registration | H",
+// };
 
 
 
