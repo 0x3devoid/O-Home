@@ -5,7 +5,7 @@ import Image from 'next/image'
 import MiniNav from './mininav'
 const Profile = () => {
     return (
-        <div className='h-full mobile-no-scrollbar md:border-r border-[#8899] md:mr-2 mt-10 lg:mt-0 '>
+        <div className='h-full mobile-no-scrollbar md:border-r border-[#8899] md:mr-2 mt-14 lg:mt-4 '>
      
 
             <div className='flex justify-between items-center px-2'>

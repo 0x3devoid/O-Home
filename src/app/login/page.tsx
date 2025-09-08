@@ -59,15 +59,15 @@ const page = () => {
                 {!next &&
 
                 <>
-            <h1 className='mt-10 text-start text-lg font-extrabold'>Sign in to H</h1>
+            <h1 className='mt-10 text-start text-lg font-extrabold'>Sign in to EdQorta</h1>
 
-                    <div className='w-full flex justify-center gap-3 rounded-3xl p-2 px-5 bg-[#fff] text-[#000] mt-5 cursor-pointer text-sm font-thin
+                    <div className='w-full flex justify-center gap-3 rounded-3xl p-2 px-5 bg-[#fff] text-[#000] mt-5 cursor-pointer  font-bold
           '>
                         <FcGoogle size={20} />
                         Sign in with Google
 
                     </div>
-                    <div className='w-full flex justify-center gap-3 rounded-3xl p-2 px-5 bg-[#fff] text-[#000] mt-3 cursor-pointer text-sm font-thin'>
+                    <div className='w-full flex justify-center gap-3 rounded-3xl p-2 px-5 bg-[#fff] text-[#000] mt-3 cursor-pointer  font-bold'>
                         <FaApple size={20} />
                         Sign in with Apple
 
@@ -80,7 +80,7 @@ const page = () => {
                     </div>
                     <div>
 
-                        <input type="text" placeholder='Email or Username' onChange={((e) => setEmail(e.target.value))} className='w-full rounded p-2 px-2 border border-gray-600 text-[#fff] bg-transparent mt-5 cursor-pointer text-sm font-thin' required />
+                        <input type="email" placeholder='Email or Username' onChange={((e) => setEmail(e.target.value))} className='w-full rounded p-2 px-2 border border-gray-600 text-[#fff] bg-transparent mt-5 cursor-pointer text-sm font-thin' required />
 
                         <button className='w-full rounded-3xl p-2 px-5 bg-[#fff] text-[#000] mt-5 cursor-pointer text-sm font-bold' typeof='button' onClick={handleNext} >
                             Next
@@ -103,7 +103,7 @@ const page = () => {
 
                         <input type="password" placeholder='Password' className='w-full rounded p-2 px-2 border border-gray-600 text-[#fff] bg-transparent mt-5 cursor-pointer text-sm font-thin' required />
 
-                        <p className='text-start text-[10px] text-[#6f6de0]'>Forgot password?</p>
+                        <p className='text-start text-[10px] text-[#6f6de0] mt-2'>Forgot password?</p>
 
                         <button className='w-full rounded-3xl p-2 px-5 bg-[#fff] text-[#000] mt-10 cursor-pointer text-sm font-bold' >
                             Log In

@@ -5,7 +5,7 @@ import Image from 'next/image'
 
 const Posts = () => {
     return (
-        <div className='border-b-[0.1px] border-[#31313199] w-full'>
+        <div className='border-b-[0.1px] border-[#31313199] w-full pr-3'>
             <div className='w-full flex justify-between items-start gap-3 mt-5 mb-3'>
                 <div className='flex-shrink-0 ml-3'>
                     <Image src={"/images/cat_nft.jpg"} className='rounded-full' width={40} height={40} alt='.' />
@@ -68,10 +68,10 @@ const Posts = () => {
                     </div>
 
                     <div className='flex items-center justify-between mt-2 space-x-2 w-full md:w-[500px] m-auto'>
-                        <button className='text-[#8899] cursor-pointer rounded-full hover:rounded-full hover:bg-[#76ff93] hover:text-[#258339] p-2 transition-colors duration-100 flex'><MessageCircle className='w-5 h-5' /> <span className='text-[10px] md:text-[12px] mt-[5px]'>526</span> </button>
-                        <button className='text-[#8899] cursor-pointer rounded-full hover:rounded-full hover:bg-[#dd6794] hover:text-[#68213c] p-2 transition-colors duration-100 flex'><HeartIcon className='w-5 h-5' /><span className='text-[10px] md:text-[12px] mt-[5px]'>200</span></button>
-                        <button className='text-[#8899] cursor-pointer rounded-full hover:rounded-full hover:bg-[#926de9] hover:text-[#2c1a57] p-2 transition-colors duration-100 flex'><BarChart2 className='w-6 h-6' /><span className='text-[10px] md:text-[12px] mt-[10px]'>1.1k</span></button>
-                        <button className='text-[#8899] cursor-pointer rounded-full hover:rounded-full hover:bg-[#235f23] hover:text-[#258339] p-2 transition-colors duration-100 flex'><BookmarkIcon className='w-5 h-5' /><span className='text-[10px] md:text-[12px] mt-[5px]'>154</span></button>
+                        <button className='text-[#8899] cursor-pointer rounded-full hover:rounded-full  hover:text-[#76ff93] p-1 transition-colors duration-100 flex'><MessageCircle className='w-3 h-5 mr-1 lg:w-5 lg:h-5' /> <span className='text-[8px] md:text-[12px] mt-[5px]'>526</span> </button>
+                        <button className='text-[#8899] cursor-pointer rounded-full hover:rounded-full  hover:text-[#dd6794] p-1 transition-colors duration-100 flex'><HeartIcon className='w-3 h-5 mr-1 lg:w-5 lg:h-5' /><span className='text-[8px] md:text-[12px] mt-[5px]'>200</span></button>
+                        <button className='text-[#8899] cursor-pointer rounded-full hover:rounded-full  hover:text-[#926de9] p-1 transition-colors duration-100 flex'><BarChart2 className='w-3 h-7 mr-1 lg:w-5 lg:h-8' /><span className='text-[8px] md:text-[12px] mt-[10px]'>1.1k</span></button>
+                        <button className='text-[#8899] cursor-pointer rounded-full hover:rounded-full  hover:text-[#258339] p-1 transition-colors duration-100 flex'><BookmarkIcon className='w-3 h-3 mr-1 lg:w-5 lg:h-5' /></button>
                     </div>
                 </div>
             </div>

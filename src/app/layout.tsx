@@ -16,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={aldrich.className}>
       <body
-        className="antalized p-4"
+        className="antalized"
       >
 
           {children}
