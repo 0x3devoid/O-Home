@@ -4,14 +4,14 @@ import SearchBar from '../profile/search'
 import NotificationBar from './notification'
 
 export const metadata = {
-  title: "Notifications | H",
+  title: "Notifications | EdQorta",
 };
 
 
 const page = () => {
   return (
     <div className="flex h-screen control-bigger-screen">
-            <div className="w-10 md:w-40 flex-shrink-0">
+            <div className=" md:w-40 flex-shrink-0">
                 <Navbar />
             </div>
 

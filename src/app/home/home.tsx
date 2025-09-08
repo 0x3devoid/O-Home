@@ -27,14 +27,15 @@ const Home = () => {
     };
 
     return (
-        <div className='h-full mobile-no-scrollbar '>
+        <div className='h-full mobile-no-scrollbar'>
 
-            <div className="flex justify-between items-center mt-5 border-b border-[#8899]">
+
+            <div className="flex justify-between items-center mt-10 lg:mt-2 border-b-[0.1px] border-[#31313199]">
                 {tabs.map((tab) => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`text-center font-bold cursor-pointer p-2 w-full hover:bg-[#8899] `}
+                        className={`text-center font-bold cursor-pointer p-1 w-full hover:bg-[#53535399] `}
                     >
                         <p className="md:text-[16px]">{tab}</p>
                         {activeTab === tab && (
@@ -48,8 +49,6 @@ const Home = () => {
 
             <div className='space-y-4'>
                 {renderContent()}
-
-
             </div>
         </div>
     )

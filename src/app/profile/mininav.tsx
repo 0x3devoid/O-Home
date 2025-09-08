@@ -28,7 +28,7 @@ const MiniNav = () => {
 
                 {tabs.map((tab) => {
                     return <>
-                        <button onClick={(() => setActiveTab(tab))} key={tab} className='text-center font-bold  hover:bg-[#8899] cursor-pointer p-2 w-full'>
+                        <button onClick={(() => setActiveTab(tab))} key={tab} className='text-center font-bold  hover:bg-[#8899] cursor-pointer p-1 w-full'>
                             <p className='md:text-[16px] '> {tab}</p>
                             {activeTab === tab && <p className='md:text-[16px] border-b-4 w-[60px] border-blue-500   rounded-3xl  m-auto'></p>}
 

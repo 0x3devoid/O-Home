@@ -6,7 +6,7 @@ import MiniNav from './mininav'
 
 const NotificationBar = () => {
   return (
-    <div>
+    <div className='mt-10 lg:mt-0'>
       <div className='flex p-2 gap-5 md:gap-10'>
          <h2 className='font-extrabold text-xl'>Notifications</h2>
       </div>

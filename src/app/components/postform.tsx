@@ -6,7 +6,7 @@ import Image from 'next/image';
 
 const PostForm = () => {
     return (
-        <div className='border-b border-t border-[#8899] w-full'>
+        <div className=' border-b-[0.1px] border-[#31313199] w-full'>
             <div className='w-full flex justify-between items-start gap-3 mt-5 mb-3'>
                 <div className='flex-shrink-0 ml-3'>
                                       <Image src={"/images/cat_nft.jpg"} className='rounded-full' width={50} height={50} alt='.' />
@@ -19,7 +19,7 @@ const PostForm = () => {
                         placeholder='What property is available?'
                     ></textarea>
 
-                    <div className='flex items-center justify-between mt-2 pt-3 border-t border-[#8899]'>
+                    <div className='flex items-center justify-between mt-2 pt-3 border-t-[0.1px] border-[#31313199]'>
                         <div className='flex items-center space-x-2 '>
                             <button className='text-blue-500 '><ImageIcon className='w-5 h-5' /></button>
                             <button className='text-blue-500 '><VideoIcon className='w-5 h-5' /></button>

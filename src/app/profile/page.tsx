@@ -5,14 +5,14 @@ import SearchBar from './search'
 
 
 export const metadata = {
-  title: "Profile | H",
+  title: "Profile | EdQorta",
 };
 
 
 const page = () => {
   return (
     <div className="flex h-screen control-bigger-screen">
-            <div className="w-10 md:w-40 flex-shrink-0">
+            <div className="md:w-40 flex-shrink-0">
                 <Navbar />
             </div>
 

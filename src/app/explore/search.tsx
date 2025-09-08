@@ -6,7 +6,7 @@ import MiniNav from './mininav'
 
 const SearchTab = () => {
   return (
-    <div>
+    <div className='mt-10 lg:mt-0'>
       <div className='flex p-2 gap-5 md:gap-10'>
           <div className='border border-[#8899] rounded-3xl p-2 px-2 flex-1'>
                 <div className='flex items-center justify-center'>

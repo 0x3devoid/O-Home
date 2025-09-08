@@ -5,14 +5,14 @@ import Setting from './setting'
 
 
 export const metadata = {
-  title: "Settings | H",
+  title: "Settings | EdQorta",
 };
 
 
 const page = () => {
   return (
     <div className="flex h-screen control-bigger-screen">
-            <div className="w-10 md:w-40 flex-shrink-0">
+            <div className="md:w-40 flex-shrink-0">
                 <Navbar />
             </div>
 

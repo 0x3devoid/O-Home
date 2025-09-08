@@ -6,7 +6,7 @@ import MiniNav from './mininav'
 
 const SearchTab = () => {
   return (
-    <div>
+    <div className='mt-10 lg:mt-0'>
      
 
     </div>

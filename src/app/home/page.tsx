@@ -5,7 +5,7 @@ import Home from './home'
 
 
 export const metadata = {
-  title: "Home | H",
+  title: "Home | EdQorta",
 };
 
 
@@ -13,7 +13,7 @@ const page = () => {
   return (
     <div className="flex h-screen control-bigger-screen">
             {/* Navbar - Fixed width on mobile, responsive on desktop */}
-            <div className="w-10 md:w-40 flex-shrink-0">
+            <div className="md:w-40 ">
                 <Navbar />
             </div>
 
