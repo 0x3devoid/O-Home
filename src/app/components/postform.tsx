@@ -27,7 +27,7 @@ const PostForm = () => {
                             <button className='text-blue-500 '><SmileIcon className='w-5 h-5' /></button>
                             <button className='text-blue-500 '><Calendar1 className='w-5 h-5' /></button>
                         </div>
-                        <button className='px-4 py-2  bg-[#8899] rounded-3xl text-[12px] md:text-sm text-[#000] font-extrabold'>Post</button>
+                        <button className='px-4 py-1  bg-[#8899] rounded-3xl text-[10px] md:text-sm text-[#000] font-extrabold'>Post</button>
                     </div>
                 </div>
             </div>
