@@ -5,7 +5,7 @@ import Image from 'next/image'
 
 const Posts = () => {
     return (
-        <div className='border-b-[0.1px] border-[#31313199] w-full pr-3'>
+        <div className='border-b border-[#31313199] w-full pr-3'>
             <div className='w-full flex justify-between items-start gap-3 mt-5 mb-3'>
                 <div className='flex-shrink-0 ml-3'>
                     <Image src={"/images/cat_nft.jpg"} className='rounded-full' width={40} height={40} alt='.' />
@@ -63,7 +63,7 @@ const Posts = () => {
                         </p>
                     </div>
 
-                    <div className='flex justify-center items-center m-auto w-full md:w-[500px] h-[250px] md:h-[300px] rounded-2xl border-[0.1px] border-[#31313199] mt-5'>
+                    <div className='flex justify-center items-center m-auto w-full md:w-[500px] h-[150px] md:h-[300px] rounded-2xl border-[0.1px] border-[#31313199] mt-5'>
 
                     </div>
 

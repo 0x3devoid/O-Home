@@ -30,7 +30,7 @@ const Home = () => {
         <div className='h-full mobile-no-scrollbar'>
 
 
-            <div className="flex justify-between items-center mt-14 lg:mt-4 border-b-[0.1px] border-[#31313199]">
+            <div className="flex justify-between items-center mt-14 lg:mt-4 border-b border-[#31313199]">
                 {tabs.map((tab) => (
                     <button
                         key={tab}
