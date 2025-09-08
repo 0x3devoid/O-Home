@@ -17,14 +17,14 @@ const Home = () => {
 
   return (
 
-    <div className='md:flex justify-between items-center gap-5 md:w-[700px] m-auto mt-[100px] md:mt-10'>
+    <div className='md:flex justify-between items-center gap-5 md:w-[700px] m-auto mt-[100px] md:mt-10 p-2'>
 
     <div className='hidden md:flex justify-center'>
-        <Image src="/images/logo.png" alt="." width={150} height={150} />
+        <Image src="/images/edqorta.png" alt="." width={250} height={70} />
     </div>
 
      <div className='flex md:hidden justify-center'>
-        <Image src="/images/logo.png" alt="." width={50} height={50} />
+        <Image src="/images/edqorta.png" alt="." width={150} height={50} />
     </div>
 
       <div>

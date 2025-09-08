@@ -78,7 +78,7 @@ const Navbar = () => {
                 <div className='w-full flex flex-col justify-center items-center md:justify-end md:items-end gap-2 md:gap-4 p-2 md:p-4'>
                     <a href='/home' className='cursor-pointer mb-3'>
                         <div className='flex justify-center'>
-                            <Image src="/images/logo.png" alt="." width={35} height={35} />
+                            <Image src="/images/edqorta.png" alt="." width={100} height={35} />
                         </div>
                     </a>
 
@@ -112,7 +112,7 @@ const Navbar = () => {
                     </button>
 
 
-                    <Image src="/images/logo.png" alt="." width={20} height={20} />
+                    <Image src="/images/edqorta.png" alt="." width={100} height={35} />
 
 
                     <div>
