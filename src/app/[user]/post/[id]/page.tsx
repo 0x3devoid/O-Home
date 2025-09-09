@@ -5,7 +5,7 @@ import SearchBar from '@/app/profile/search'
 
 
 export const metadata = {
-  title: "Home | EdQorta",
+  title: "Posts | EdQorta",
 };
 
 

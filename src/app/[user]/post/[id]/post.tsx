@@ -3,18 +3,21 @@ import { BookmarkIcon, DotIcon, MessageCircle, HeartIcon, BarChart2, MoreHorizon
 import Link from 'next/link'
 import React from 'react'
 import Image from 'next/image'
+import Comments from './comments'
 
 const post = () => {
+
+       
     return (
-        <div className='mt-[50px] lg:*:mt-0 p-2'>
-            <div className='flex items-center gap-[50px]'>
+        <div className='mt-[50px] lg:*:mt-0'>
+            <div className='flex items-center gap-[50px] p-2'>
                 <Link href='/home'>
                     <ArrowLeft className='w-5 h-5 cursor-pointer' />
                 </Link>
                 <p className='text-lg font-extrabold'>Post</p>
             </div>
 
-            <div className='border-b border-[#31313199] w-full pr-3'>
+            <div className='border-b border-[#31313199] w-full pr-3 p-2'>
                 <div className='w-full'>
                     <div className='flex justify-between items-start gap-3 mt-5 mb-3'>
                         <div className=''>
@@ -84,9 +87,7 @@ const post = () => {
             </div>
 
 
-            <div>
-
-            </div>
+            <Comments />
 
         </div>
     )

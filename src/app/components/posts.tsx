@@ -8,17 +8,22 @@ const Posts = () => {
     return (
         <div className='border-b border-[#31313199] w-full pr-3'>
             <div className='w-full flex justify-between items-start gap-3 mt-5 mb-3'>
-                <div className='flex-shrink-0 ml-3'>
-                    <Image src={"/images/cat_nft.jpg"} className='rounded-full' width={40} height={40} alt='.' />
-                </div>
+                <Link href='/profile'>
+                    <div className='flex-shrink-0 ml-3'>
+                        <Image src={"/images/cat_nft.jpg"} className='rounded-full' width={40} height={40} alt='.' />
+                    </div>
+                </Link>
                 <div className='flex-1'>
                     <div className='w-full flex items-start justify-between'>
 
-                        <div className='flex items-start justify-start gap-1 mb-2'>
-                            <h3 className='font-extrabold text-sm md:text-lg'>Devoid</h3>
-                            <h3 className='text-[#8899] text-sm md:text-lg'>@Dev_Bot</h3>
-                            <h3 className='text-[#8899] flex text-sm md:text-lg'> <DotIcon className='w-5 h-5' /> 4h</h3>
-                        </div>
+                        <Link href='/profile'>
+                            <div className='flex items-start justify-start gap-1 mb-2'>
+                                <h3 className='font-extrabold text-sm md:text-lg'>Devoid</h3>
+                                <h3 className='text-[#8899] text-sm md:text-lg'>@Dev_Bot</h3>
+                                <h3 className='text-[#8899] flex text-sm md:text-lg'> <DotIcon className='w-5 h-5' /> 4h</h3>
+                            </div>
+
+                        </Link>
 
 
 
@@ -28,36 +33,36 @@ const Posts = () => {
 
                     </div>
 
-                  <Link href='/0x3devoid/post/25378899253'>
-                    <div className='mt-2'>
+                    <Link href='/0x3devoid/post/25378899253'>
+                        <div className='mt-2'>
 
-                        <p>🏡 FOR SALE: Luxury Home in the Heart of Lekki, Lagos!</p>
-                        <p>
+                            <p>🏡 FOR SALE: Luxury Home in the Heart of Lekki, Lagos!</p>
+                            <p>
 
 
-                            Experience upscale living in one of Lagos' most sought-after neighborhoods! This stunning 4-bedroom fully detached duplex is the perfect blend of elegance, comfort, and security.
+                                Experience upscale living in one of Lagos' most sought-after neighborhoods! This stunning 4-bedroom fully detached duplex is the perfect blend of elegance, comfort, and security.
 
-                        </p>
-                        <p>
-                            Located in a serene, gated estate
+                            </p>
+                            <p>
+                                Located in a serene, gated estate
 
-                        </p>
-                        <p>
-                            📍 Location: Lekki, Lagos
+                            </p>
+                            <p>
+                                📍 Location: Lekki, Lagos
 
-                        </p>
-                        <p>
-                            💰 Price: Competitive and negotiable
+                            </p>
+                            <p>
+                                💰 Price: Competitive and negotiable
 
-                        </p><p>
-                            📞 Contact: ....
+                            </p><p>
+                                📞 Contact: ....
 
-                        </p><p>
-                            📆 Schedule a tour today and make this dream home yours!
+                            </p><p>
+                                📆 Schedule a tour today and make this dream home yours!
 
-                        </p>
-                    </div>
-                  </Link>
+                            </p>
+                        </div>
+                    </Link>
 
                     <div className='flex justify-center items-center m-auto w-full md:w-[500px] h-[150px] md:h-[300px] rounded-2xl border-[0.1px] border-[#31313199] mt-5'>
 
