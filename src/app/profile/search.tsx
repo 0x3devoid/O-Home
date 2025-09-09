@@ -27,7 +27,7 @@ const SearchBar = () => {
                 }
             `}</style>
 
-            <div className='border border-[#8899] rounded-3xl p-2 px-2'>
+            <div className='border border-[#8899] rounded-3xl p-2 px-2  mt-5'>
                 <div className='flex items-center justify-center'>
                     <Search className='w-6 h-6 text-gray-500 mr-2' />
                     <input

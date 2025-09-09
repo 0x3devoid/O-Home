@@ -1,35 +1,42 @@
-import React from 'react'
+import { ArrowLeft } from 'lucide-react'
 import { BookmarkIcon, DotIcon, MessageCircle, HeartIcon, BarChart2, MoreHorizontal } from 'lucide-react'
-import Image from 'next/image'
 import Link from 'next/link'
+import React from 'react'
+import Image from 'next/image'
 
-
-const Posts = () => {
+const post = () => {
     return (
-        <div className='border-b border-[#31313199] w-full pr-3'>
-            <div className='w-full flex justify-between items-start gap-3 mt-5 mb-3'>
-                <div className='flex-shrink-0 ml-3'>
-                    <Image src={"/images/cat_nft.jpg"} className='rounded-full' width={40} height={40} alt='.' />
-                </div>
-                <div className='flex-1'>
-                    <div className='w-full flex items-start justify-between'>
+        <div className='mt-[50px] lg:*:mt-0 p-2'>
+            <div className='flex items-center gap-[50px]'>
+                <Link href='/home'>
+                    <ArrowLeft className='w-5 h-5 cursor-pointer' />
+                </Link>
+                <p className='text-lg font-extrabold'>Post</p>
+            </div>
 
-                        <div className='flex items-start justify-start gap-1 mb-2'>
-                            <h3 className='font-extrabold text-sm md:text-lg'>Devoid</h3>
-                            <h3 className='text-[#8899] text-sm md:text-lg'>@Dev_Bot</h3>
-                            <h3 className='text-[#8899] flex text-sm md:text-lg'> <DotIcon className='w-5 h-5' /> 4h</h3>
+            <div className='border-b border-[#31313199] w-full pr-3'>
+                <div className='w-full'>
+                    <div className='flex justify-between items-start gap-3 mt-5 mb-3'>
+                        <div className=''>
+                            <Image src={"/images/cat_nft.jpg"} className='rounded-full' width={40} height={40} alt='.' />
                         </div>
 
+                        <div className='w-full flex items-start justify-between'>
+
+                            <div className=' gap-1 mb-2'>
+                                <h3 className='font-extrabold text-sm md:text-lg'>Devoid</h3>
+                                <h3 className='text-[#8899] text-[12px] md:text-lg'>@Dev_Bot</h3>
+                            </div>
 
 
-                        <div className='cursor-pointer text-[#8899] rounded-full hover:rounded-full hover:bg-[#dd6794] hover:text-[#68213c] p-2 mt-[-7px] transition-colors duration-100'>
-                            <MoreHorizontal className='w-4 h-4 md:w-6 md:h-6' />
+
+
+
                         </div>
-
                     </div>
 
-                  <Link href='/0x3devoid/post/25378899253'>
-                    <div className='mt-2'>
+
+                    <div className='mt-5'>
 
                         <p>🏡 FOR SALE: Luxury Home in the Heart of Lekki, Lagos!</p>
                         <p>
@@ -57,10 +64,14 @@ const Posts = () => {
 
                         </p>
                     </div>
-                  </Link>
-
                     <div className='flex justify-center items-center m-auto w-full md:w-[500px] h-[150px] md:h-[300px] rounded-2xl border-[0.1px] border-[#31313199] mt-5'>
 
+                    </div>
+
+                    <div className='flex justify-start items-start mt-5 gap-1'>
+                        <span className='text-[10px] lg:text-xs text-gray-500'>20:18 . </span>
+                        <span className='text-[10px] lg:text-xs text-gray-500'>07/09/2025 . </span>
+                        <span className='text-[10px] lg:text-xs text-gray-500'> <span className='text-white'>500K</span> Views</span>
                     </div>
 
                     <div className='flex items-center justify-between mt-2 space-x-2 w-full md:w-[500px] m-auto'>
@@ -71,8 +82,14 @@ const Posts = () => {
                     </div>
                 </div>
             </div>
+
+
+            <div>
+
+            </div>
+
         </div>
     )
 }
 
-export default Posts
+export default post

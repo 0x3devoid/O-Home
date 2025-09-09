@@ -91,6 +91,7 @@ const Navbar = () => {
                                 className='cursor-pointer rounded-full hover:rounded-full hover:bg-[#8899] p-2 transition-colors duration-100'
                             >
                                 <IconComponent className='w-4 h-4 md:w-6 md:h-6' />
+                                
                             </a>
                         )
                     })}
