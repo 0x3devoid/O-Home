@@ -34,7 +34,7 @@ const page = () => {
     return (
         <>
 
-            <div className='md:flex justify-between items-center gap-5 md:w-[700px] m-auto mt-[100px] md:mt-10 p-2'>
+            <div className='md:flex justify-between items-center gap-5 md:w-[700px] w-[350px]  m-auto mt-[100px] md:mt-10 p-2'>
 
                 <div className='hidden md:flex justify-center'>
                     <Image src="/images/edqorta.png" alt="." width={250} height={70} />
@@ -58,15 +58,7 @@ const page = () => {
                             className="w-full rounded p-2 px-2 border border-gray-600 text-[#fff] bg-transparent mt-3 cursor-pointer text-sm font-thin"
                             required
                         />
-                        <input
-                            type="text"
-                            name="username"
-                            placeholder="Username"
-                            value={formData.username}
-                            onChange={handleChange}
-                            className="w-full rounded p-2 px-2 border border-gray-600 text-[#fff] bg-transparent mt-3 cursor-pointer text-sm font-thin"
-                            required
-                        />
+                       
                         <input
                             type="email"
                             name="email"
@@ -98,7 +90,7 @@ const page = () => {
                             type="submit"
                             className="w-full rounded-3xl p-2 px-5 bg-[#fff] text-[#000] mt-5 cursor-pointer text-sm font-bold"
                         >
-                            Create Account
+                            Next
                         </button>
                     </form>
                 </div>

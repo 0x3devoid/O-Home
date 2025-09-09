@@ -44,7 +44,7 @@ const page = () => {
     return (
       <>
       
-        <div className='md:flex justify-between items-center gap-5 md:w-[700px] m-auto mt-[100px] md:mt-10 p-2'>
+        <div className='md:flex justify-between items-center gap-5 md:w-[700px] w-[350px] m-auto mt-[100px] md:mt-10 p-2'>
     
         <div className='hidden md:flex justify-center'>
             <Image src="/images/edqorta.png" alt="." width={250} height={70} />
