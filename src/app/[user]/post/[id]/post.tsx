@@ -9,7 +9,7 @@ const post = () => {
 
        
     return (
-        <div className='mt-[50px] lg:*:mt-0'>
+        <div className='mt-[50px] lg:*:mt-0 h-full mobile-no-scrollbar'>
             <div className='flex items-center gap-[50px] p-2'>
                 <Link href='/home'>
                     <ArrowLeft className='w-5 h-5 cursor-pointer' />

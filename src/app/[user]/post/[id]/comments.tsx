@@ -70,7 +70,7 @@ const Comments = () => {
 
 
     return (
-        <div className=' w-full mb-[100px]'>
+        <div className=' w-full mb-[70px] lg:mb-0'>
 
             {CommentLogs.map((comment, index) => (
 
