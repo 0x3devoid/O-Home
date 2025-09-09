@@ -30,7 +30,7 @@ const Home = () => {
         </div>
 
         <div>
-          <h1 className='mt-[55px] text-start text-[30px] font-extrabold'>Everything properties.</h1>
+          <h1 className='mt-[55px] text-start text-[30px] font-[1000]'>Everything properties.</h1>
 
           <h2 className='mt-10 text-start text-lg font-extrabold'>Join today.</h2>
 
