@@ -20,7 +20,7 @@ const post = () => {
 
 
     return (
-        <div className='mt-[50px] lg:*:mt-0 h-full mobile-no-scrollbar'>
+        <div className='mt-[50px] lg:mt-0 h-full mobile-no-scrollbar'>
             <ReuseableComponents path='Post' />
             <div className='border-b border-[#31313199] w-full pr-3 p-2'>
                 <div className='w-full'>
@@ -96,7 +96,7 @@ const post = () => {
             {isCommentOpen && (
                 <div
                     ref={overlayRef}
-                    className="fixed inset-0 bg-black bg-opacity-60 z-70 flex items-center justify-center md:items-start md:mt-[150px] mt-[50px]"
+                    className="fixed inset-0 bg-black bg-opacity-60 z-70 flex items-center justify-center md:items-start md:mt-[50px] mt-[50px]"
                     onClick={handleOverlayClick}
                 >
                     <div
@@ -104,7 +104,7 @@ const post = () => {
                         font-sans
                         bg-[#000] border border-[#31313199] z-80
                         w-full h-full rounded-none   
-                        md:w-[35%] md:max-h-[50vh] md:rounded-2xl 
+                        md:w-[50%] md:max-h-[80vh] md:rounded-2xl 
                         shadow-lg p-4 relative overflow-y-auto
                         "
                     >
