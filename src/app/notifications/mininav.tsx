@@ -9,9 +9,9 @@ const MiniNav = () => {
     const renderContent = () => {
         switch (activeTab) {
             case 'All':
-                return <div className='p-2 text-center'>No All notifications yet</div>
+                return <div className='p-2 text-center'>No notifications yet.</div>
             case 'Tags':
-                return <div className='p-2 text-center'>No Tags notifications yet</div>
+                return <div className='p-2 text-center'>No Tags notifications yet.</div>
             default:
                 return null;
 
@@ -20,7 +20,7 @@ const MiniNav = () => {
     }
     return (
         <>
-            <div className='flex justify-between items-center mt-5 border-b border-[#8899] '>
+            <div className='flex justify-between items-center mt-2 border-b border-[#8899] '>
 
                 {tabs.map((tab) => (
                     <button

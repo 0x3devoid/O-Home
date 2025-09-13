@@ -28,7 +28,8 @@ body {
 }
 
 p {
-  font-size: 10px;
+  font-size: 11px;
+  font-family: sans-serif;
 }
 
 .mobile-no-scrollbar {
@@ -60,6 +61,7 @@ p {
   
 p {
   font-size: 12px;
+  font-family: sans-serif;
 }
 
   .mobile-no-scrollbar {

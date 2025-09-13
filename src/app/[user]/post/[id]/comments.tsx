@@ -70,23 +70,23 @@ const Comments = () => {
 
 
     return (
-        <div className=' w-full mb-[70px] lg:mb-0'>
+        <div className='w-full mb-[70px] lg:mb-0'>
 
             {CommentLogs.map((comment, index) => (
 
                 <div className='w-full flex justify-between items-start gap-3 mt-5 mb-3 border-b border-[#31313199]' key={index}>
                     <Link href={`/${comment.username}`}>
                         <div className='flex-shrink-0 ml-3'>
-                            <Image src={comment.icon} className='rounded-full' width={40} height={40} alt='.' />
+                            <Image src={comment.icon} className='rounded-full' width={30} height={30} alt='.' />
                         </div>
                     </Link>
-                    <div className='flex-1'>
+                    <div className='flex-1 pb-2 pr-2'>
                         <div className='w-full flex items-start justify-between'>
 
                             <Link href={`/${comment.username}`}>
                                 <div className='flex items-start justify-start gap-1 mb-2'>
-                                    <h3 className='font-extrabold text-sm md:text-lg'>{comment.name}</h3>
-                                    <h3 className='text-[#8899] text-[12px] md:text-lg'>@{comment.username}</h3>
+                                    <h3 className='font-bold text-[12px] md:text-sm'>{comment.name}</h3>
+                                    <h3 className='text-[#8899] text-[12px] md:text-sm'>@{comment.username}</h3>
                                 </div>
                             </Link>
 
@@ -97,12 +97,7 @@ const Comments = () => {
                         </div>
 
 
-                        <div className='flex items-center justify-between mt-2 space-x-2 w-full md:w-[500px] m-auto'>
-                            <button className='text-[#8899] cursor-pointer rounded-full hover:rounded-full  hover:text-[#76ff93] p-1 transition-colors duration-100 flex'><MessageCircle className='w-3 h-5 mr-1 lg:w-5 lg:h-5' /> <span className='text-[8px] md:text-[12px] mt-[5px]'>{comment.reply}</span> </button>
-                            <button className='text-[#8899] cursor-pointer rounded-full hover:rounded-full  hover:text-[#dd6794] p-1 transition-colors duration-100 flex'><HeartIcon className='w-3 h-5 mr-1 lg:w-5 lg:h-5' /><span className='text-[8px] md:text-[12px] mt-[5px]'>{comment.like}</span></button>
-                            <button className='text-[#8899] cursor-pointer rounded-full hover:rounded-full  hover:text-[#926de9] p-1 transition-colors duration-100 flex'><BarChart2 className='w-3 h-7 mr-1 lg:w-5 lg:h-8' /><span className='text-[8px] md:text-[12px] mt-[10px]'>{comment.impression}</span></button>
-                            <button className='text-[#8899] cursor-pointer rounded-full hover:rounded-full  hover:text-[#258339] p-1 transition-colors duration-100 flex'><BookmarkIcon className='w-3 h-3 mr-1 lg:w-5 lg:h-5' /></button>
-                        </div>
+                 
                     </div>
                 </div>
 

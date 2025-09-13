@@ -1,11 +1,11 @@
 import React from 'react'
 import Navbar from '../home/navbar'
 import SearchBar from '../profile/search'
-import MessageBar from './message'
+import Bookmark from './bookmark'
 
 
 export const metadata = {
-  title: "Messages | EdQorta",
+  title: "Explore | EdQorta",
 };
 
 
@@ -17,7 +17,7 @@ const page = () => {
             </div>
 
             <div className="flex-1 min-w-0">
-                <MessageBar />
+                <Bookmark />
             </div>
 
             <div className="hidden lg:block lg:w-80 flex-shrink-0">

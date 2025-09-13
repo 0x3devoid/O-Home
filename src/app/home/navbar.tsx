@@ -1,7 +1,7 @@
 "use client"
 import React, { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
-import { Home, Search, MessageSquare, User, Settings, Bell, Menu, X } from 'lucide-react'
+import { Home, Search, MessageSquare, User, Settings, Bell, Menu, X, Bookmark } from 'lucide-react'
 
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -67,6 +67,7 @@ const Navbar = () => {
         { href: '/explore', icon: Search, label: 'Explore' },
         { href: '/notifications', icon: Bell, label: 'Notifications' },
         { href: '/messages', icon: MessageSquare, label: 'Messages' },
+        { href: '/bookmarks', icon: Bookmark, label: 'Bookmarks' },
         { href: '/profile', icon: User, label: 'Profile' },
         { href: '/settings', icon: Settings, label: 'Settings' },
     ]
