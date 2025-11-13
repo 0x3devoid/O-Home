@@ -680,7 +680,7 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   handleShare: async (property) => {
-    const shareUrl = `https://edqorta.app/property/${property.id}`
+    const shareUrl = `https://edqorta.com/property/${property.id}`
     const shareData = {
       title: `Check out this property on edQorta`,
       text: `${property.description?.substring(0, 100)}... at ${property.location}`,

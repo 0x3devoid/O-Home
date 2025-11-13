@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import axios from '@/api/axios';
+import { notifyError, notifySuccess, notifyWarning } from "../utils/notify"
 
 // Icons
 const ArrowLeftIcon = () => (
@@ -33,6 +35,12 @@ enum SignUpStep {
   Success,
 }
 
+
+interface CreatePasswordStepProps {
+  onSubmit: (password: string) => void;
+}
+
+
 interface SignUpFlowProps {
   onComplete: () => void;
   onBack: () => void;
@@ -43,37 +51,29 @@ const ProgressIndicator: React.FC<{ currentStep: number; totalSteps: number }> =
     {Array.from({ length: totalSteps }).map((_, index) => (
       <div
         key={index}
-        className={`h-1.5 rounded-full transition-all duration-500 ease-out ${
-          index < currentStep ? 'w-12 bg-violet-600' : 'w-8 bg-gray-200'
-        }`}
+        className={`h-1.5 rounded-full transition-all duration-500 ease-out ${index < currentStep ? 'w-12 bg-violet-600' : 'w-8 bg-gray-200'
+          }`}
       />
     ))}
   </div>
 );
 
-const AddContactStep: React.FC<{ onSubmit: (contact: string, method: 'phone' | 'email') => void }> = ({ onSubmit }) => {
-  const [signupMethod, setSignupMethod] = useState<'phone' | 'email'>('phone');
-  const [phoneInput, setPhoneInput] = useState('');
+const AddMailStep: React.FC<{ onSubmit: (contact: string) => void }> = ({ onSubmit }) => {
   const [emailInput, setEmailInput] = useState('');
 
-  const isPhoneValid = phoneInput.length === 10;
-  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (signupMethod === 'phone' && isPhoneValid) {
-      onSubmit(`+234${phoneInput}`, 'phone');
-    } else if (signupMethod === 'email' && isEmailValid) {
-      onSubmit(emailInput, 'email');
+    const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput);
+    if (!isEmailValid) {
+      notifyWarning("Invalid email address")
+      console.log("Invalid email address")
+      return
     }
+    onSubmit(emailInput);
   };
 
-  const handlePhoneInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/[^0-9]/g, '');
-    if (value.length <= 10) {
-      setPhoneInput(value);
-    }
-  };
+
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col h-full animate-fadeIn">
@@ -81,72 +81,28 @@ const AddContactStep: React.FC<{ onSubmit: (contact: string, method: 'phone' | '
         <h2 className="text-2xl font-bold text-gray-800 mb-2">Create your account</h2>
         <p className="text-gray-500 mb-6">Enter your contact information to get started</p>
 
-        <div className="flex gap-3 mb-6">
-          <button
-            type="button"
-            onClick={() => setSignupMethod('phone')}
-            className={`flex-1 py-3 px-4 rounded-xl font-semibold transition-all duration-300 ${
-              signupMethod === 'phone'
-                ? 'bg-violet-100 text-violet-700 shadow-sm'
-                : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-            Phone
-          </button>
-          <button
-            type="button"
-            onClick={() => setSignupMethod('email')}
-            className={`flex-1 py-3 px-4 rounded-xl font-semibold transition-all duration-300 ${
-              signupMethod === 'email'
-                ? 'bg-violet-100 text-violet-700 shadow-sm'
-                : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-            Email
-          </button>
+        <div>
+          <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+            Email Address
+          </label>
+          <div className="flex items-center p-4 border-2 border-gray-200 rounded-2xl focus-within:border-violet-500 focus-within:ring-4 focus-within:ring-violet-100 transition-all bg-white">
+            <input
+              id="email"
+              type="email"
+              value={emailInput}
+              onChange={(e) => setEmailInput(e.target.value)}
+              placeholder="you@example.com"
+              className="w-full outline-none bg-transparent text-gray-800 text-lg"
+              autoFocus
+            />
+          </div>
         </div>
 
-        {signupMethod === 'phone' ? (
-          <div>
-            <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-2">
-              Phone Number
-            </label>
-            <div className="flex items-center p-4 border-2 border-gray-200 rounded-2xl focus-within:border-violet-500 focus-within:ring-4 focus-within:ring-violet-100 transition-all bg-white">
-              <span className="font-semibold text-gray-500 pr-3 border-r-2 border-gray-200">+234</span>
-              <input
-                id="phone"
-                type="tel"
-                value={phoneInput}
-                onChange={handlePhoneInputChange}
-                placeholder="801 234 5678"
-                className="w-full pl-3 outline-none bg-transparent text-gray-800 text-lg"
-                autoFocus
-              />
-            </div>
-          </div>
-        ) : (
-          <div>
-            <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
-              Email Address
-            </label>
-            <div className="flex items-center p-4 border-2 border-gray-200 rounded-2xl focus-within:border-violet-500 focus-within:ring-4 focus-within:ring-violet-100 transition-all bg-white">
-              <input
-                id="email"
-                type="email"
-                value={emailInput}
-                onChange={(e) => setEmailInput(e.target.value)}
-                placeholder="you@example.com"
-                className="w-full outline-none bg-transparent text-gray-800 text-lg"
-                autoFocus
-              />
-            </div>
-          </div>
-        )}
       </div>
       <button
         type="submit"
-        disabled={signupMethod === 'phone' ? !isPhoneValid : !isEmailValid}
-        className="w-full mt-6 py-4 px-6 bg-violet-600 text-white rounded-2xl font-semibold transition-all duration-300 disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-violet-700 hover:shadow-lg active:scale-98"
+
+        className="w-full cursor-pointer mt-6 py-4 px-6 bg-violet-600 text-white rounded-2xl font-semibold transition-all duration-300 disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-violet-700 hover:shadow-lg active:scale-98"
       >
         Continue
       </button>
@@ -154,10 +110,18 @@ const AddContactStep: React.FC<{ onSubmit: (contact: string, method: 'phone' | '
   );
 };
 
-const CreatePasswordStep: React.FC<{ onSubmit: () => void }> = ({ onSubmit }) => {
+
+
+// same validation logic as backend
+const validatePassword = (password: string) => {
+  return password.match(/^(?=.*[a-zA-Z\d].*)[a-zA-Z\d!@#$%&*]{7,}$/);
+};
+
+const CreatePasswordStep: React.FC<CreatePasswordStepProps> = ({ onSubmit }) => {
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const isPasswordValid = password.length >= 8;
+
+  const isPasswordValid = validatePassword(password);
 
   const getPasswordStrength = () => {
     if (password.length === 0) return { text: '', color: '' };
@@ -172,7 +136,7 @@ const CreatePasswordStep: React.FC<{ onSubmit: () => void }> = ({ onSubmit }) =>
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isPasswordValid) {
-      onSubmit();
+      onSubmit(password);
     }
   };
 
@@ -180,11 +144,18 @@ const CreatePasswordStep: React.FC<{ onSubmit: () => void }> = ({ onSubmit }) =>
     <form onSubmit={handleSubmit} className="flex flex-col h-full animate-fadeIn">
       <div className="flex-grow">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">Create a password</h2>
-        <p className="text-gray-500 mb-6">Secure your account with a strong password</p>
+        <p className="text-gray-500 mb-6">
+          Secure your account with a strong password
+        </p>
 
-        <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
+        <label
+          htmlFor="password"
+          className="block text-sm font-semibold text-gray-700 mb-2"
+        >
           Password
         </label>
+
+        {/* Password input field */}
         <div className="relative">
           <input
             id="password"
@@ -203,32 +174,46 @@ const CreatePasswordStep: React.FC<{ onSubmit: () => void }> = ({ onSubmit }) =>
             {isPasswordVisible ? <EyeSlashIcon /> : <EyeIcon />}
           </button>
         </div>
+
+        {/* Password strength meter */}
         {password.length > 0 && (
           <div className="mt-3 flex items-center gap-2 animate-fadeIn">
             <div className="flex-grow h-2 bg-gray-100 rounded-full overflow-hidden">
               <div
-                className={`h-full transition-all duration-500 ${
-                  password.length < 6
-                    ? 'w-1/4 bg-red-500'
-                    : password.length < 8
+                className={`h-full transition-all duration-500 ${password.length < 6
+                  ? 'w-1/4 bg-red-500'
+                  : password.length < 8
                     ? 'w-1/2 bg-orange-500'
                     : password.length < 12
-                    ? 'w-3/4 bg-green-500'
-                    : 'w-full bg-green-600'
-                }`}
+                      ? 'w-3/4 bg-green-500'
+                      : 'w-full bg-green-600'
+                  }`}
               />
             </div>
-            <span className={`text-sm font-semibold ${strength.color}`}>{strength.text}</span>
+            <span className={`text-sm font-semibold ${strength.color}`}>
+              {strength.text}
+            </span>
           </div>
         )}
+
+        {/* Password hint */}
         <p className="text-xs text-gray-500 mt-4">
-          Password must be at least 8 characters long
+          Password must be at least 8 characters and can include letters, numbers, and special characters
         </p>
+
+        {/* Validation error display */}
+        {!isPasswordValid && password.length > 0 && (
+          <p className="text-xs text-red-500 mt-2">
+            Password must contain only letters, numbers, or !@#$%&* and be at least 7 characters long.
+          </p>
+        )}
       </div>
+
+      {/* Continue button */}
       <button
         type="submit"
         disabled={!isPasswordValid}
-        className="w-full mt-6 py-4 px-6 bg-violet-600 text-white rounded-2xl font-semibold transition-all duration-300 disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-violet-700 hover:shadow-lg active:scale-98"
+        className="w-full cursor-pointer mt-6 py-4 px-6 bg-violet-600 text-white rounded-2xl font-semibold transition-all duration-300 disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-violet-700 hover:shadow-lg active:scale-98"
       >
         Continue
       </button>
@@ -236,9 +221,9 @@ const CreatePasswordStep: React.FC<{ onSubmit: () => void }> = ({ onSubmit }) =>
   );
 };
 
-const VerifyContactStep: React.FC<{ contact: string; method: 'phone' | 'email'; onVerified: () => void }> = ({
+
+const VerifyContactStep: React.FC<{ contact: string; onVerified: (code: string) => void }> = ({
   contact,
-  method,
   onVerified,
 }) => {
   const [code, setCode] = useState('');
@@ -260,14 +245,14 @@ const VerifyContactStep: React.FC<{ contact: string; method: 'phone' | 'email'; 
 
   useEffect(() => {
     if (code.length === CODE_LENGTH) {
-      setTimeout(() => onVerifiedCallback(), 500);
+      setTimeout(() => onVerifiedCallback(code), 500);
     }
   }, [code, onVerifiedCallback]);
 
   return (
     <div className="flex flex-col h-full animate-fadeIn">
       <div className="flex-grow">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">Verify your {method}</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">Verify your Email</h2>
         <p className="text-gray-500 mb-8">
           We sent a {CODE_LENGTH}-digit code to{' '}
           <span className="font-semibold text-gray-800">{contact}</span>
@@ -278,13 +263,12 @@ const VerifyContactStep: React.FC<{ contact: string; method: 'phone' | 'email'; 
           {Array.from({ length: CODE_LENGTH }).map((_, index) => (
             <div
               key={index}
-              className={`w-14 h-16 flex items-center justify-center text-2xl font-bold rounded-2xl transition-all duration-300 ${
-                code.length > index
-                  ? 'bg-violet-600 text-white border-2 border-violet-600 scale-105 shadow-lg'
-                  : code.length === index
+              className={`w-14 h-16 flex items-center justify-center text-2xl font-bold rounded-2xl transition-all duration-300 ${code.length > index
+                ? 'bg-violet-600 text-white border-2 border-violet-600 scale-105 shadow-lg'
+                : code.length === index
                   ? 'border-2 border-violet-500 bg-violet-50 scale-105'
                   : 'border-2 border-gray-200 bg-white'
-              }`}
+                }`}
             >
               {code[index] || ''}
             </div>
@@ -302,7 +286,7 @@ const VerifyContactStep: React.FC<{ contact: string; method: 'phone' | 'email'; 
 
         <button
           type="button"
-          className="w-full mt-8 text-center text-violet-600 font-semibold hover:text-violet-700 transition-colors"
+          className="w-full cursor-pointer mt-8 text-center text-violet-600 font-semibold hover:text-violet-700 transition-colors"
         >
           Resend code
         </button>
@@ -333,7 +317,7 @@ const SuccessStep: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
       <div className="w-full max-w-sm">
         <button
           onClick={onComplete}
-          className="w-full py-4 px-6 bg-violet-600 text-white rounded-2xl font-semibold hover:bg-violet-700 transition-all duration-300 hover:shadow-lg active:scale-98 mb-4"
+          className="w-full cursor-pointer py-4 px-6 bg-violet-600 text-white rounded-2xl font-semibold hover:bg-violet-700 transition-all duration-300 hover:shadow-lg active:scale-98 mb-4"
         >
           Get Started
         </button>
@@ -354,9 +338,10 @@ const SuccessStep: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
 
 const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete, onBack }) => {
   const [step, setStep] = useState<SignUpStep>(SignUpStep.AddContact);
-  const [contactInfo, setContactInfo] = useState({ value: '', method: 'phone' as 'phone' | 'email' });
+  const [contactInfo, setContactInfo] = useState('');
+  const [password, setPassword] = useState('');
 
-  const titles = ['Sign up', 'Create Password', 'Verify Contact'];
+  const titles = ['Sign up', 'Create Password', 'Verify Email'];
   const currentTitle = titles[step] || '';
 
   const handleBack = () => {
@@ -367,17 +352,48 @@ const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete, onBack }) => {
     }
   };
 
-  const handleContactSubmit = useCallback((submittedContact: string, method: 'phone' | 'email') => {
-    setContactInfo({ value: submittedContact, method });
+  const handleContactSubmit = useCallback((submittedContact: string) => {
+    setContactInfo(submittedContact);
     setStep(SignUpStep.CreatePassword);
   }, []);
 
-  const handlePasswordSubmit = useCallback(() => {
-    setStep(SignUpStep.VerifyContact);
-  }, []);
+  const handlePasswordSubmit = useCallback(async (submittedPassword: string) => {
+    setPassword(submittedPassword);
 
-  const handleCodeVerified = useCallback(() => {
-    setStep(SignUpStep.Success);
+    try {
+      const response = await axios.post('/auth/signup', {
+        email: contactInfo,
+        password: submittedPassword,
+      });
+
+      if (response.status === 200) {
+        setStep(SignUpStep.VerifyContact);
+      }
+
+    } catch (error: any) {
+      console.error('Signup error:', error.response?.data.message);
+      notifyError(`Signup error: ${error.response?.data.message || error.message}`);
+    }
+  }, [contactInfo]);
+
+
+  const handleCodeVerified = useCallback(async (code: string) => {
+
+    try {
+
+      const response = await axios.post('/auth/otp/verify', {
+        email: contactInfo,
+        otp: String(code),
+      });
+
+      if (response.status === 200) {
+        notifySuccess('Signup successfully.');
+        setStep(SignUpStep.Success);
+      }
+    } catch (error: any) {
+      console.error('Signup error:', error.response?.data || error.message);
+      notifyError(`Signup error: ${error.response?.data.message || error.message}`);
+    }
   }, []);
 
   if (step === SignUpStep.Success) {
@@ -396,7 +412,7 @@ const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete, onBack }) => {
         <header className="flex items-center justify-between mb-6">
           <button
             onClick={handleBack}
-            className="p-2 rounded-xl hover:bg-gray-100 transition-colors text-gray-600"
+            className="p-2  cursor-pointer rounded-xl hover:bg-gray-100 transition-colors text-gray-600"
           >
             <ArrowLeftIcon />
           </button>
@@ -409,12 +425,11 @@ const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete, onBack }) => {
         <ProgressIndicator currentStep={step + 1} totalSteps={3} />
 
         <main className="min-h-fit flex flex-col">
-          {step === SignUpStep.AddContact && <AddContactStep onSubmit={handleContactSubmit} />}
+          {step === SignUpStep.AddContact && <AddMailStep onSubmit={handleContactSubmit} />}
           {step === SignUpStep.CreatePassword && <CreatePasswordStep onSubmit={handlePasswordSubmit} />}
           {step === SignUpStep.VerifyContact && (
             <VerifyContactStep
-              contact={contactInfo.value}
-              method={contactInfo.method}
+              contact={contactInfo}
               onVerified={handleCodeVerified}
             />
           )}

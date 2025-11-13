@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import dynamic from "next/dynamic"
 import ErrorBoundary from "@/components/ErrorBoundary"
 import { useStore } from "@/lib/store"
-
+import axios from "@/api/axios"
 // Dynamically import components to avoid SSR issues
 const WelcomeScreen = dynamic(() => import("@/components/WelcomeScreen"), { ssr: false })
 const SignUpFlow = dynamic(() => import("@/components/SignUpFlow"), { ssr: false })
@@ -28,34 +28,9 @@ export default function Home() {
     setAuthScreen("signup")
   }
 
-  const handleSignUpComplete = () => {
-    // Create a mock user for demo purposes
-    const mockUser = {
-      id: Date.now(),
-      name: 'New User',
-      username: 'new_user',
-      avatar: 'https://randomuser.me/api/portraits/lego/1.jpg',
-      accountType: 'personal' as const,
-      agentStatus: 'none' as const,
-      listerStatus: 'unverified' as const,
-      bio: '',
-      location: '',
-      postsCount: 0,
-      followersCount: 0,
-      followingCount: 0,
-      followerIds: [],
-      followingIds: [],
-      ratings: "0",
-      trustScore: 0,
-      feedbacksCount: 0,
-      likedPropertyIds: [],
-      reviews: [],
-      stories: []
-    }
-    // Set user in store
-    setCurrentUser(mockUser)
-    // Redirect to home page
-    router.push("/home")
+  const handleSignUpComplete = async () => {
+    router.push("/login")
+
   }
 
   const handleBackToWelcome = () => {
