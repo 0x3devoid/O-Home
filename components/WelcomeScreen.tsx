@@ -1,3 +1,4 @@
+"use client"
 import React from 'react';
 import { GoogleIcon } from './Icons';
 import Link from 'next/link';
@@ -17,7 +18,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStartSignUp }) => {
 
      const response = await axios.get("/auth/google");
      if(response.status === 200){
-      
+
      }
 
     } catch (error: any) {
