@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from '@/api/axios';
-import { notifyError, notifySuccess, notifyWarning } from "../utils/notify"
+import { notifyError, notifyInfo, notifySuccess, notifyWarning } from "../utils/notify"
 
 // Icons
 const ArrowLeftIcon = () => (
@@ -28,25 +28,16 @@ const CheckIcon = () => (
   </svg>
 );
 
-enum SignUpStep {
-  AddContact,
-  CreatePassword,
-  VerifyContact,
-  Success,
+const validatePassword = (password: string) => {
+  return password.match(/^(?=.*[a-zA-Z\d].*)[a-zA-Z\d!@#$%&*]{7,}$/);
+};
+
+interface ProgressIndicatorProps {
+  currentStep: number;
+  totalSteps: number;
 }
 
-
-interface CreatePasswordStepProps {
-  onSubmit: (password: string) => void;
-}
-
-
-interface SignUpFlowProps {
-  onComplete: () => void;
-  onBack: () => void;
-}
-
-const ProgressIndicator: React.FC<{ currentStep: number; totalSteps: number }> = ({ currentStep, totalSteps }) => (
+const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({ currentStep, totalSteps }) => (
   <div className="flex justify-center items-center gap-2 mb-8">
     {Array.from({ length: totalSteps }).map((_, index) => (
       <div
@@ -58,25 +49,32 @@ const ProgressIndicator: React.FC<{ currentStep: number; totalSteps: number }> =
   </div>
 );
 
-const AddMailStep: React.FC<{ onSubmit: (contact: string) => void }> = ({ onSubmit }) => {
-  const [emailInput, setEmailInput] = useState('');
+interface AddMailStepProps {
+  email: string;
+  onSubmit: (email: string) => void;
+  isSubmitting: boolean;
+}
 
+const AddMailStep: React.FC<AddMailStepProps> = ({ email, onSubmit, isSubmitting }) => {
+  const [emailInput, setEmailInput] = useState(email);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput);
     if (!isEmailValid) {
-      notifyWarning("Invalid email address")
-      console.log("Invalid email address")
-      return
+      notifyWarning("Invalid email address");
+      return;
     }
     onSubmit(emailInput);
   };
 
-
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !isSubmitting) {
+      handleSubmit();
+    }
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col h-full animate-fadeIn">
+    <div className="flex flex-col h-full animate-fadeIn">
       <div className="flex-grow">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">Create your account</h2>
         <p className="text-gray-500 mb-6">Enter your contact information to get started</p>
@@ -91,33 +89,32 @@ const AddMailStep: React.FC<{ onSubmit: (contact: string) => void }> = ({ onSubm
               type="email"
               value={emailInput}
               onChange={(e) => setEmailInput(e.target.value)}
+              onKeyPress={handleKeyPress}
               placeholder="you@example.com"
               className="w-full outline-none bg-transparent text-gray-800 text-lg"
+              disabled={isSubmitting}
               autoFocus
             />
           </div>
         </div>
-
       </div>
       <button
-        type="submit"
-
+        onClick={handleSubmit}
+        disabled={isSubmitting}
         className="w-full cursor-pointer mt-6 py-4 px-6 bg-violet-600 text-white rounded-2xl font-semibold transition-all duration-300 disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-violet-700 hover:shadow-lg active:scale-98"
       >
-        Continue
+        {isSubmitting ? 'Processing...' : 'Continue'}
       </button>
-    </form>
+    </div>
   );
 };
 
+interface CreatePasswordStepProps {
+  onSubmit: (password: string) => void;
+  isSubmitting: boolean;
+}
 
-
-// same validation logic as backend
-const validatePassword = (password: string) => {
-  return password.match(/^(?=.*[a-zA-Z\d].*)[a-zA-Z\d!@#$%&*]{7,}$/);
-};
-
-const CreatePasswordStep: React.FC<CreatePasswordStepProps> = ({ onSubmit }) => {
+const CreatePasswordStep: React.FC<CreatePasswordStepProps> = ({ onSubmit, isSubmitting }) => {
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
@@ -133,37 +130,38 @@ const CreatePasswordStep: React.FC<CreatePasswordStepProps> = ({ onSubmit }) => 
 
   const strength = getPasswordStrength();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isPasswordValid) {
+  const handleSubmit = () => {
+    if (isPasswordValid && !isSubmitting) {
       onSubmit(password);
     }
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && isPasswordValid && !isSubmitting) {
+      handleSubmit();
+    }
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col h-full animate-fadeIn">
+    <div className="flex flex-col h-full animate-fadeIn">
       <div className="flex-grow">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">Create a password</h2>
-        <p className="text-gray-500 mb-6">
-          Secure your account with a strong password
-        </p>
+        <p className="text-gray-500 mb-6">Secure your account with a strong password</p>
 
-        <label
-          htmlFor="password"
-          className="block text-sm font-semibold text-gray-700 mb-2"
-        >
+        <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
           Password
         </label>
 
-        {/* Password input field */}
         <div className="relative">
           <input
             id="password"
             type={isPasswordVisible ? 'text' : 'password'}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyPress={handleKeyPress}
             placeholder="Enter at least 8 characters"
             className="w-full p-4 pr-12 border-2 border-gray-200 rounded-2xl focus:border-violet-500 focus:ring-4 focus:ring-violet-100 outline-none transition-all bg-white text-gray-800 text-lg"
+            disabled={isSubmitting}
             autoFocus
           />
           <button
@@ -175,7 +173,6 @@ const CreatePasswordStep: React.FC<CreatePasswordStepProps> = ({ onSubmit }) => 
           </button>
         </div>
 
-        {/* Password strength meter */}
         {password.length > 0 && (
           <div className="mt-3 flex items-center gap-2 animate-fadeIn">
             <div className="flex-grow h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -190,18 +187,14 @@ const CreatePasswordStep: React.FC<CreatePasswordStepProps> = ({ onSubmit }) => 
                   }`}
               />
             </div>
-            <span className={`text-sm font-semibold ${strength.color}`}>
-              {strength.text}
-            </span>
+            <span className={`text-sm font-semibold ${strength.color}`}>{strength.text}</span>
           </div>
         )}
 
-        {/* Password hint */}
         <p className="text-xs text-gray-500 mt-4">
           Password must be at least 8 characters and can include letters, numbers, and special characters
         </p>
 
-        {/* Validation error display */}
         {!isPasswordValid && password.length > 0 && (
           <p className="text-xs text-red-500 mt-2">
             Password must contain only letters, numbers, or !@#$%&* and be at least 7 characters long.
@@ -209,31 +202,37 @@ const CreatePasswordStep: React.FC<CreatePasswordStepProps> = ({ onSubmit }) => 
         )}
       </div>
 
-      {/* Continue button */}
       <button
-        type="submit"
-        disabled={!isPasswordValid}
+        onClick={handleSubmit}
+        disabled={!isPasswordValid || isSubmitting}
         className="w-full cursor-pointer mt-6 py-4 px-6 bg-violet-600 text-white rounded-2xl font-semibold transition-all duration-300 disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-violet-700 hover:shadow-lg active:scale-98"
       >
-        Continue
+        {isSubmitting ? 'Creating Account...' : 'Continue'}
       </button>
-    </form>
+    </div>
   );
 };
 
+interface VerifyContactStepProps {
+  email: string;
+  onVerified: (code: string) => void;
+  isSubmitting: boolean;
+}
 
-const VerifyContactStep: React.FC<{ contact: string; onVerified: (code: string) => void }> = ({
-  contact,
-  onVerified,
-}) => {
+const VerifyContactStep: React.FC<VerifyContactStepProps> = ({ email, onVerified, isSubmitting }) => {
   const [code, setCode] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const hasSubmittedRef = useRef(false);
   const CODE_LENGTH = 6;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, '');
     if (value.length <= CODE_LENGTH) {
       setCode(value);
+      // Reset submission flag when user changes the code
+      if (hasSubmittedRef.current) {
+        hasSubmittedRef.current = false;
+      }
     }
   };
 
@@ -241,13 +240,14 @@ const VerifyContactStep: React.FC<{ contact: string; onVerified: (code: string) 
     inputRef.current?.focus();
   };
 
-  const onVerifiedCallback = useCallback(onVerified, [onVerified]);
-
   useEffect(() => {
-    if (code.length === CODE_LENGTH) {
-      setTimeout(() => onVerifiedCallback(code), 500);
+    if (code.length === CODE_LENGTH && !hasSubmittedRef.current && !isSubmitting) {
+      hasSubmittedRef.current = true;
+      setTimeout(() => {
+        onVerified(code);
+      }, 300);
     }
-  }, [code, onVerifiedCallback]);
+  }, [code, onVerified, isSubmitting]);
 
   return (
     <div className="flex flex-col h-full animate-fadeIn">
@@ -255,7 +255,7 @@ const VerifyContactStep: React.FC<{ contact: string; onVerified: (code: string) 
         <h2 className="text-2xl font-bold text-gray-800 mb-2">Verify your Email</h2>
         <p className="text-gray-500 mb-8">
           We sent a {CODE_LENGTH}-digit code to{' '}
-          <span className="font-semibold text-gray-800">{contact}</span>
+          <span className="font-semibold text-gray-800">{email}</span>
         </p>
 
         <label className="block text-sm font-semibold text-gray-700 mb-4">Verification Code</label>
@@ -281,12 +281,20 @@ const VerifyContactStep: React.FC<{ contact: string; onVerified: (code: string) 
           onChange={handleInputChange}
           maxLength={CODE_LENGTH}
           className="absolute opacity-0 w-0 h-0"
+          disabled={isSubmitting}
           autoFocus
         />
 
+        {isSubmitting && (
+          <div className="mt-4 text-center text-violet-600 font-semibold animate-fadeIn">
+            Verifying...
+          </div>
+        )}
+
         <button
           type="button"
-          className="w-full cursor-pointer mt-8 text-center text-violet-600 font-semibold hover:text-violet-700 transition-colors"
+          className="w-full cursor-pointer mt-8 text-center text-violet-600 font-semibold hover:text-violet-700 transition-colors disabled:opacity-50"
+          disabled={isSubmitting}
         >
           Resend code
         </button>
@@ -295,7 +303,11 @@ const VerifyContactStep: React.FC<{ contact: string; onVerified: (code: string) 
   );
 };
 
-const SuccessStep: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
+interface SuccessStepProps {
+  onComplete: () => void;
+}
+
+const SuccessStep: React.FC<SuccessStepProps> = ({ onComplete }) => {
   const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
@@ -310,7 +322,7 @@ const SuccessStep: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
         </div>
         <h2 className="text-3xl font-bold text-gray-800 mb-3">All set!</h2>
         <p className="text-gray-500 max-w-sm mx-auto mb-8">
-          Your account has been successfully created. Welcome aboard!
+          Your account has been successfully created. Welcome onboard!
         </p>
       </div>
 
@@ -323,80 +335,102 @@ const SuccessStep: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
         </button>
         <p className="text-xs text-gray-400">
           By continuing, you agree to our{' '}
-          <a href="#" className="underline hover:text-gray-600">
-            Terms
-          </a>{' '}
-          and{' '}
-          <a href="#" className="underline hover:text-gray-600">
-            Privacy Policy
-          </a>
+          <a href="#" className="underline hover:text-gray-600">Terms</a>
+          {' '}and{' '}
+          <a href="#" className="underline hover:text-gray-600">Privacy Policy</a>
         </p>
       </div>
     </div>
   );
 };
 
-const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete, onBack }) => {
-  const [step, setStep] = useState<SignUpStep>(SignUpStep.AddContact);
-  const [contactInfo, setContactInfo] = useState('');
-  const [password, setPassword] = useState('');
+interface SignUpFlowProps {
+  onComplete: () => void;
+  onBack: () => void;
+}
 
-  const titles = ['Sign up', 'Create Password', 'Verify Email'];
-  const currentTitle = titles[step] || '';
+const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete, onBack }) => {
+  const [step, setStep] = useState(0);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleBack = () => {
-    if (step === SignUpStep.AddContact) {
+    if (step === 0) {
       onBack();
-    } else if (step > SignUpStep.AddContact && step < SignUpStep.Success) {
+    } else if (step > 0 && step < 3) {
       setStep(step - 1);
     }
   };
 
-  const handleContactSubmit = useCallback((submittedContact: string) => {
-    setContactInfo(submittedContact);
-    setStep(SignUpStep.CreatePassword);
-  }, []);
+  const handleEmailSubmit = (email: string) => {
+    setFormData(prev => ({ ...prev, email }));
+    setStep(1);
+  };
 
-  const handlePasswordSubmit = useCallback(async (submittedPassword: string) => {
-    setPassword(submittedPassword);
+  const handlePasswordSubmit = async (password: string) => {
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
 
     try {
-      const response = await axios.post('/auth/signup', {
-        email: contactInfo,
-        password: submittedPassword,
-      });
+      const payload = {
+        email: formData.email,
+        password: password
+      };
 
-      if (response.status === 200) {
-        setStep(SignUpStep.VerifyContact);
+
+      const response = await axios.post('/auth/signup', payload);
+
+      if (response.status === 201) {
+        setFormData(prev => ({ ...prev, password }));
+        setStep(2);
       }
-
     } catch (error: any) {
-      console.error('Signup error:', error.response?.data.message);
-      notifyError(`Signup error: ${error.response?.data.message || error.message}`);
+      console.error('Signup error:', error.response?.data?.message || error.message);
+      notifyError(`Signup error: ${error.response?.data?.message || error.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
-  }, [contactInfo]);
+  };
 
+  const handleCodeVerified = async (code: string) => {
+    if (isSubmitting) return;
 
-  const handleCodeVerified = useCallback(async (code: string) => {
+    setIsSubmitting(true);
+
 
     try {
+      const payload = {
+        email: formData.email,
+        otp: String(code)
+      };
+      console.log(payload)
 
-      const response = await axios.post('/auth/otp/verify', {
-        email: contactInfo,
-        otp: String(code),
-      });
+
+      notifyInfo(`Verifying OTP for email: ${payload.email}`);
+
+      const response = await axios.post('/auth/otp/verify', payload);
 
       if (response.status === 200) {
         notifySuccess('Signup successfully.');
-        setStep(SignUpStep.Success);
+        setStep(3);
       }
     } catch (error: any) {
-      console.error('Signup error:', error.response?.data || error.message);
-      notifyError(`Signup error: ${error.response?.data.message || error.message}`);
+      console.error('Verification error:', error.response?.data?.message || error.message);
+      notifyError(`Verification error: ${error.response?.data?.message || error.message}`);
+      // Reset the code input on error
+      setIsSubmitting(false);
+    } finally {
+      if (step === 3) {
+        setIsSubmitting(false);
+      }
     }
-  }, []);
+  };
 
-  if (step === SignUpStep.Success) {
+  if (step === 3) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-violet-50 to-white flex items-center justify-center p-4">
         <div className="w-full max-w-md">
@@ -412,7 +446,7 @@ const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete, onBack }) => {
         <header className="flex items-center justify-between mb-6">
           <button
             onClick={handleBack}
-            className="p-2  cursor-pointer rounded-xl hover:bg-gray-100 transition-colors text-gray-600"
+            className="p-2 cursor-pointer rounded-xl hover:bg-gray-100 transition-colors text-gray-600"
           >
             <ArrowLeftIcon />
           </button>
@@ -425,12 +459,24 @@ const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete, onBack }) => {
         <ProgressIndicator currentStep={step + 1} totalSteps={3} />
 
         <main className="min-h-fit flex flex-col">
-          {step === SignUpStep.AddContact && <AddMailStep onSubmit={handleContactSubmit} />}
-          {step === SignUpStep.CreatePassword && <CreatePasswordStep onSubmit={handlePasswordSubmit} />}
-          {step === SignUpStep.VerifyContact && (
+          {step === 0 && (
+            <AddMailStep
+              email={formData.email}
+              onSubmit={handleEmailSubmit}
+              isSubmitting={isSubmitting}
+            />
+          )}
+          {step === 1 && (
+            <CreatePasswordStep
+              onSubmit={handlePasswordSubmit}
+              isSubmitting={isSubmitting}
+            />
+          )}
+          {step === 2 && (
             <VerifyContactStep
-              contact={contactInfo}
+              email={formData.email}
               onVerified={handleCodeVerified}
+              isSubmitting={isSubmitting}
             />
           )}
         </main>

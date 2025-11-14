@@ -1,12 +1,31 @@
 import React from 'react';
 import { GoogleIcon } from './Icons';
 import Link from 'next/link';
+import axios from '@/api/axios';
+import { notifyError, notifySuccess, notifyWarning } from "../utils/notify"
+
 
 interface WelcomeScreenProps {
   onStartSignUp: () => void;
 }
 
 const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStartSignUp }) => {
+
+  const handleGoggleAuth = async () => {
+
+    try {
+
+     const response = await axios.get("/auth/google");
+     if(response.status === 200){
+      
+     }
+
+    } catch (error: any) {
+      console.error('Login error:', error.response?.data || error.message);
+      notifyError(`Login error: ${error.response?.data?.message || error.message}`);
+    }
+
+  }
   return (
     <div className="flex flex-col md:flex-row h-screen bg-white">
       <div className="relative md:w-1/2 w-full h-1/3 md:h-full">
@@ -34,7 +53,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStartSignUp }) => {
           </p>
 
           <div className="mt-12 space-y-4">
-            <button className="w-full  cursor-pointer flex items-center justify-center gap-3 py-3 px-6 border border-gray-300 rounded-full text-gray-700 font-semibold hover:bg-gray-100 transition-colors">
+            <button onClick={handleGoggleAuth} className="w-full cursor-pointer flex items-center justify-center gap-3 py-3 px-6 border border-gray-300 rounded-full text-gray-700 font-semibold hover:bg-gray-100 transition-colors">
               <GoogleIcon />
               Continue with Google
             </button>
