@@ -1,4 +1,4 @@
-"use client"
+'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import axios from '@/api/axios';
 import { notifyError, notifySuccess, notifyWarning } from "../../utils/notify"
@@ -316,28 +316,6 @@ const Login = () => {
     );
 };
 
-// Add CSS animations
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
 
-  .animate-fadeIn {
-    animation: fadeIn 0.5s ease-out;
-  }
-
-  .active\\:scale-98:active {
-    transform: scale(0.98);
-  }
-`;
-document.head.appendChild(style);
 
 export default Login;
