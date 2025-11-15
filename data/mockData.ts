@@ -382,7 +382,7 @@ export const users: User[] = [
   }
 ];
 
-export const currentUserId = 1; // Amaka (renter)
+export const currentUserId = 1; 
 
 const generateComments = (propertyId: number): Comment[] => {
     switch(propertyId) {

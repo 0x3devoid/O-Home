@@ -136,7 +136,7 @@ const VerifyContactStep: React.FC<VerifyContactStepProps> = ({ email, onVerified
 
 const Login = () => {
     const router = useRouter();
-    const { setCurrentUser, isAuthenticated } = useStore();
+    const { setCurrentUser } = useStore();
     const [emailInput, setEmailInput] = useState('');
     const [passwordInput, setPasswordInput] = useState('');
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -163,7 +163,8 @@ const Login = () => {
             if (response.status === 200) {
                 notifySuccess(response.data.message || 'Login successful!');
                 console.log(response.data)
-                // router.push('/profile')
+                setCurrentUser(response.data)
+                router.push('/home')
             } else if (response.status === 201) {
                 // User hasn't verified OTP
                 notifyWarning('Please verify your email address to continue');

@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useCallback } from "react"
+import { useMemo, useCallback, useEffect } from "react"
 import HomeContainerScreen from "@/screens/HomeContainerScreen"
 import { useStore } from "@/lib/store"
 
@@ -23,6 +23,10 @@ export default function HomePage() {
   const handleRefresh = useStore((state) => state.handleRefresh)
   const handleShare = useStore((state) => state.handleShare)
   const handleRepost = useStore((state) => state.handleRepost)
+
+  useEffect(() => {
+    console.log(currentUser);
+  })
 
   const feedProperties = useMemo(() => {
     if (!currentUser) return []

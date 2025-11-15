@@ -14,7 +14,7 @@ type AuthScreen = "welcome" | "signup"
 
 export default function Home() {
   const [authScreen, setAuthScreen] = useState<AuthScreen>("welcome")
-  const { setCurrentUser, isAuthenticated } = useStore()
+  const {  isAuthenticated } = useStore()
   const router = useRouter()
 
   // If already authenticated, redirect to home

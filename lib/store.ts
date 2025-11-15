@@ -186,17 +186,17 @@ export const useStore = create<AppState>((set, get) => ({
     const initializedUsers = initialUsers
     const currentUser = initializedUsers[0] || null
 
-    set({
-      properties: initialProperties,
-      conversations: initialConversations,
-      users: initializedUsers,
-      neighborhoods: initialNeighborhoods,
-      searchTeams: initialSearchTeams,
-      scheduledTours: initialTours,
-      currentUser,
-      isAuthenticated: !!currentUser,
-      isLoading: false,
-    })
+    // set({
+    //   properties: initialProperties,
+    //   conversations: initialConversations,
+    //   users: initializedUsers,
+    //   neighborhoods: initialNeighborhoods,
+    //   searchTeams: initialSearchTeams,
+    //   scheduledTours: initialTours,
+    //   currentUser,
+    //   isAuthenticated: !!currentUser,
+    //   isLoading: false,
+    // })
   },
 
   // Data mutations
