@@ -1,6 +1,7 @@
 const CACHE_NAME = 'edqorta-v1';
 const urlsToCache = [
   '/',
+  '/login',
   '/home',
   '/search',
   '/messages',
