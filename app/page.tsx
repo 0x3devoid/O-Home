@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import dynamic from "next/dynamic"
 import ErrorBoundary from "@/components/ErrorBoundary"
 import { useStore } from "@/lib/store"
-import axios from "@/api/axios"
+
 // Dynamically import components to avoid SSR issues
 const WelcomeScreen = dynamic(() => import("@/components/WelcomeScreen"), { ssr: false })
 const SignUpFlow = dynamic(() => import("@/components/SignUpFlow"), { ssr: false })
@@ -14,15 +14,28 @@ type AuthScreen = "welcome" | "signup"
 
 export default function Home() {
   const [authScreen, setAuthScreen] = useState<AuthScreen>("welcome")
-  const {  isAuthenticated } = useStore()
+  const [isClient, setIsClient] = useState(false)
+  const { isAuthenticated, hydrateAuth } = useStore()
   const router = useRouter()
 
-  // If already authenticated, redirect to home
+  // Set client-side flag
   useEffect(() => {
-    if (isAuthenticated) {
+    setIsClient(true)
+  }, [])
+
+  // Hydrate auth state from localStorage on mount
+  useEffect(() => {
+    if (isClient) {
+      hydrateAuth()
+    }
+  }, [isClient, hydrateAuth])
+
+  // Redirect to home if already authenticated
+  useEffect(() => {
+    if (isClient && isAuthenticated) {
       router.push("/home")
     }
-  }, [isAuthenticated, router])
+  }, [isClient, isAuthenticated, router])
 
   const handleStartSignUp = () => {
     setAuthScreen("signup")
@@ -30,11 +43,28 @@ export default function Home() {
 
   const handleSignUpComplete = async () => {
     router.push("/login")
-
   }
 
   const handleBackToWelcome = () => {
     setAuthScreen("welcome")
+  }
+
+  // Don't render until we're on the client
+  if (!isClient) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-gray-600">Loading...</div>
+      </div>
+    )
+  }
+
+  // Don't render if authenticated (will redirect)
+  if (isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-gray-600">Redirecting...</div>
+      </div>
+    )
   }
 
   const renderContent = () => {

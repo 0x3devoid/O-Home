@@ -16,7 +16,7 @@ interface ProfileScreenProps {
     onStartVerification: (property: Property) => void;
     onMessageLister: (lister: User, property: Property) => void;
     onViewProfile: (userId: number) => void;
-    onUpdateProfile: (userId: number, updates: Partial<Pick<User, 'name' | 'username' | 'bio' | 'location' | 'avatar' | 'bannerImage'>>) => void;
+    onUpdateProfile: (userId: number, updates: Partial<Pick<User, 'fullname' | 'username' | 'bio' | 'location' | 'avatar' | 'bannerImage'>>) => void;
     onViewNeighborhood: (neighborhoodId: number) => void;
     onShareToTeam: (teamId: number, property: Property) => void;
     onShare: (property: Property) => void;
@@ -82,7 +82,8 @@ const ProfileScreen: React.FC<ProfileScreenProps> = (props) => {
     const [activeReviewTab, setActiveReviewTab] = useState<'received' | 'given'>('received');
 
     const [isEditing, setIsEditing] = useState(false);
-    const [editedName, setEditedName] = useState(user.name);
+    const [editedName, setEditedName] = useState(user.fullname);
+    const [editedUsername, setEditedUsername] = useState(user.username);
     const [editedBio, setEditedBio] = useState(user.bio || '');
     const [editedLocation, setEditedLocation] = useState(user.location || '');
     const [editedAvatarPreview, setEditedAvatarPreview] = useState<string | null>(null);
@@ -93,7 +94,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = (props) => {
     useEffect(() => {
         setAgentStatus(user.agentStatus);
         setIsEditing(false);
-        setEditedName(user.name);
+        setEditedName(user.fullname);
         setEditedBio(user.bio || '');
         setEditedLocation(user.location || '');
         setEditedAvatarPreview(null);
@@ -160,8 +161,9 @@ const ProfileScreen: React.FC<ProfileScreenProps> = (props) => {
     };
 
     const handleSaveChanges = () => {
-        const updates: Partial<Pick<User, 'name' | 'bio' | 'location' | 'avatar' | 'bannerImage'>> = {};
-        if (editedName !== user.name) updates.name = editedName;
+        const updates: Partial<Pick<User, 'fullname' | 'username' | 'bio' | 'location' | 'avatar' | 'bannerImage'>> = {};
+        if (editedName !== user.fullname) updates.fullname = editedName;
+        if (editedUsername !== user.username) updates.username = editedUsername;
         if (editedBio !== (user.bio || '')) updates.bio = editedBio;
         if (editedLocation !== (user.location || '')) updates.location = editedLocation;
         if (editedAvatarPreview) updates.avatar = editedAvatarPreview;
@@ -175,7 +177,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = (props) => {
 
     const handleCancelEdit = () => {
         setIsEditing(false);
-        setEditedName(user.name);
+        setEditedName(user.fullname);
         setEditedBio(user.bio || '');
         setEditedLocation(user.location || '');
         setEditedAvatarPreview(null);
@@ -200,7 +202,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = (props) => {
                     <div className="relative">
                         <div className="h-48 bg-gray-300">
                             <img
-                                src={editedBannerPreview || user.bannerImage }
+                                src={editedBannerPreview || user.bannerImage || "/banner.png"}
                                 alt={`banner`}
                                 className="w-full h-full object-cover"
                             />
@@ -230,17 +232,18 @@ const ProfileScreen: React.FC<ProfileScreenProps> = (props) => {
                             <div className="p-1 bg-white rounded-full flex-shrink-0">
                                 <div className="relative w-20 h-20">
                                     <div className={`p-0.5 rounded-full transition-colors duration-300 ${!isEditing && hasStories ? 'bg-gradient-to-tr from-yellow-400 via-red-500 to-pink-500' : ''}`}>
-                                        <div className={`p-0.5 bg-white rounded-full`}>
+                                        <div className="w-20 h-20 p-0.5 bg-white rounded-full overflow-hidden">
                                             <img
-                                                src={editedAvatarPreview || user.avatar}
-                                                alt={user.name}
-                                                className="w-full h-full rounded-full object-cover"
+                                                src={editedAvatarPreview || user.avatar || "/user.png"}
+                                                alt={user.fullname}
+                                                className="w-full h-full object-cover rounded-full"
                                             />
                                         </div>
+
                                     </div>
 
                                     {!isEditing && hasStories && (
-                                        <button onClick={() => onViewStory(user)} className="absolute inset-0 rounded-full" aria-label={`View ${user.name}'s story`}></button>
+                                        <button onClick={() => onViewStory(user)} className="absolute inset-0 rounded-full" aria-label={`View ${user.fullname}'s story`}></button>
                                     )}
 
                                     {isEditing && (
@@ -288,8 +291,8 @@ const ProfileScreen: React.FC<ProfileScreenProps> = (props) => {
                                         <button
                                             onClick={() => onToggleFollow(user.id)}
                                             className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-colors ${isFollowing
-                                                    ? 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-                                                    : 'bg-violet-600 text-white hover:bg-violet-700'
+                                                ? 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                                                : 'bg-violet-600 text-white hover:bg-violet-700'
                                                 }`}
                                         >
                                             {isFollowing ? 'Unfollow' : 'Follow'}
@@ -297,7 +300,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = (props) => {
                                         <button
                                             onClick={() => onStartDM(user.id)}
                                             className="p-2 border border-gray-300 rounded-lg hover:bg-gray-100"
-                                            aria-label={`Message ${user.name}`}
+                                            aria-label={`Message ${user.fullname}`}
                                         >
                                             <ChatAltIcon className="w-5 h-5 text-gray-700" />
                                         </button>
@@ -309,9 +312,14 @@ const ProfileScreen: React.FC<ProfileScreenProps> = (props) => {
                         <div className="mt-4">
                             <div className="flex items-center gap-2 flex-grow min-w-0">
                                 {isEditing ? (
-                                    <input type="text" placeholder='Enter your name' value={editedName} onChange={e => setEditedName(e.target.value)} className="text-sm p-2 -m-1 border rounded-md w-full" autoFocus />
+                                    <div className='flex flex-col space-y-2 w-full '>
+                                        <input type="text" placeholder='Enter your name' value={editedName} onChange={e => setEditedName(e.target.value)} className="text-sm p-2  border rounded-md w-full" autoFocus />
+
+                                        <input type="text" placeholder='Enter Username' value={editedUsername} onChange={e => setEditedUsername(e.target.value)} className="text-sm p-2 border rounded-md w-full" autoFocus />
+
+                                    </div>
                                 ) : (
-                                    <h2 className="text-xl font-bold text-gray-800 truncate">{user.name}</h2>
+                                    <h2 className="text-xl font-bold text-gray-800 truncate">{user.fullname}</h2>
                                 )}
                                 <UserVerifiedBadge user={user} />
                             </div>
@@ -335,7 +343,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = (props) => {
                             {isEditing ? (
                                 <div>
                                     <textarea placeholder='Enter your bio' value={editedBio} onChange={(e) => setEditedBio(e.target.value)} className="w-full mt-2 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 resize-none text-sm" rows={3} />
-                                    <input type="text" placeholder='Enter location' value={editedLocation} onChange={e => setEditedLocation(e.target.value)} className="text-sm p-2 -m-1 border rounded-md w-full mt-1" autoFocus />
+                                    <input type="text" placeholder='Enter location' value={editedLocation} onChange={e => setEditedLocation(e.target.value)} className="text-sm p-2 -m-1 border rounded-md w-full mt-1" />
                                 </div>
 
                             ) : (

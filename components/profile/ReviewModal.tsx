@@ -53,8 +53,8 @@ const ReviewModal: React.FC<ReviewModalProps> = ({ isOpen, onClose, onSubmit, us
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
             <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center" onClick={e => e.stopPropagation()}>
-                <h2 className="text-xl font-bold text-gray-800">Leave a review for {userToReview.name}</h2>
-                <img src={userToReview.avatar} alt={userToReview.name} className="w-20 h-20 rounded-full mx-auto mt-4 mb-4" />
+                <h2 className="text-xl font-bold text-gray-800">Leave a review for {userToReview.fullname}</h2>
+                <img src={userToReview.avatar} alt={userToReview.fullname} className="w-20 h-20 rounded-full mx-auto mt-4 mb-4" />
 
                 <div className="my-4">
                     <InteractiveStarRating rating={rating} setRating={setRating} />
@@ -63,7 +63,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({ isOpen, onClose, onSubmit, us
                 <textarea
                     value={text}
                     onChange={(e) => setText(e.target.value)}
-                    placeholder={`How was your experience with ${userToReview.name}?`}
+                    placeholder={`How was your experience with ${userToReview.fullname}?`}
                     className="w-full mt-4 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition resize-none"
                     rows={4}
                 />

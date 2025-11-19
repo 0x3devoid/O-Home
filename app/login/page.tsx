@@ -163,7 +163,10 @@ const Login = () => {
             if (response.status === 200) {
                 notifySuccess(response.data.message || 'Login successful!');
                 console.log(response.data)
-                setCurrentUser(response.data)
+                const userData =  response.data;
+                const token = response.data.accessToken;
+
+                setCurrentUser(userData, token);
                 router.push('/home')
             } else if (response.status === 201) {
                 // User hasn't verified OTP

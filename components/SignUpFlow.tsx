@@ -50,21 +50,27 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({ currentStep, tota
 );
 
 interface AddMailStepProps {
+  fName: string;
   email: string;
-  onSubmit: (email: string) => void;
+  onSubmit: (email: string, fName: string) => void; // <-- FIXED
   isSubmitting: boolean;
 }
 
-const AddMailStep: React.FC<AddMailStepProps> = ({ email, onSubmit, isSubmitting }) => {
+const AddMailStep: React.FC<AddMailStepProps> = ({ email, fName, onSubmit, isSubmitting }) => {
   const [emailInput, setEmailInput] = useState(email);
+  const [fullname, setFullname] = useState(fName);
 
   const handleSubmit = () => {
     const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput);
+    if (!fullname || !emailInput) {
+      notifyWarning("Fullname and mail cannot be empty");
+      return;
+    }
     if (!isEmailValid) {
       notifyWarning("Invalid email address");
       return;
     }
-    onSubmit(emailInput);
+    onSubmit(emailInput, fullname);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -80,7 +86,26 @@ const AddMailStep: React.FC<AddMailStepProps> = ({ email, onSubmit, isSubmitting
         <p className="text-gray-500 mb-6">Enter your contact information to get started</p>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+          <label htmlFor="text" className="block text-sm font-semibold text-gray-700 mb-2">
+            Full Name
+          </label>
+          <div className="flex items-center p-4 border-2 border-gray-200 rounded-2xl focus-within:border-violet-500 focus-within:ring-4 focus-within:ring-violet-100 transition-all bg-white">
+            <input
+              id="fName"
+              type="text"
+              value={fullname}
+              onChange={(e) => setFullname(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="John Doe"
+              className="w-full outline-none bg-transparent text-gray-800 text-lg"
+              disabled={isSubmitting}
+              autoFocus
+            />
+          </div>
+        </div>
+
+        <div>
+          <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2 mt-2">
             Email Address
           </label>
           <div className="flex items-center p-4 border-2 border-gray-200 rounded-2xl focus-within:border-violet-500 focus-within:ring-4 focus-within:ring-violet-100 transition-all bg-white">
@@ -93,7 +118,6 @@ const AddMailStep: React.FC<AddMailStepProps> = ({ email, onSubmit, isSubmitting
               placeholder="you@example.com"
               className="w-full outline-none bg-transparent text-gray-800 text-lg"
               disabled={isSubmitting}
-              autoFocus
             />
           </div>
         </div>
@@ -352,6 +376,7 @@ interface SignUpFlowProps {
 const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete, onBack }) => {
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState({
+    fName: '',
     email: '',
     password: ''
   });
@@ -365,10 +390,11 @@ const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete, onBack }) => {
     }
   };
 
-  const handleEmailSubmit = (email: string) => {
-    setFormData(prev => ({ ...prev, email }));
+  const handleEmailSubmit = (email: string, fName: string) => {
+    setFormData(prev => ({ ...prev, fName, email }));
     setStep(1);
   };
+
 
   const handlePasswordSubmit = async (password: string) => {
     if (isSubmitting) return;
@@ -377,6 +403,7 @@ const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete, onBack }) => {
 
     try {
       const payload = {
+        fullname: formData.fName,
         email: formData.email,
         password: password
       };
@@ -462,6 +489,7 @@ const SignUpFlow: React.FC<SignUpFlowProps> = ({ onComplete, onBack }) => {
           {step === 0 && (
             <AddMailStep
               email={formData.email}
+              fName={formData.fName}
               onSubmit={handleEmailSubmit}
               isSubmitting={isSubmitting}
             />

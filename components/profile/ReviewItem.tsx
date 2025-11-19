@@ -40,14 +40,14 @@ const ReviewItem: React.FC<ReviewItemProps> = ({ review, reviewedUser, onViewPro
     return (
         <div className="flex items-start space-x-3 p-4">
             <button onClick={() => onViewProfile(displayUser.id)}>
-                <img src={displayUser.avatar} alt={displayUser.name} className="w-10 h-10 rounded-full hover:opacity-80 transition-opacity" />
+                <img src={displayUser.avatar} alt={displayUser.fullname} className="w-10 h-10 rounded-full hover:opacity-80 transition-opacity" />
             </button>
             <div className="flex-1">
                 <div className="flex items-center justify-between">
                     <div>
                          <button onClick={() => onViewProfile(displayUser.id)} className="text-left group">
                             <div className="flex items-center gap-1.5">
-                                <p className="font-bold text-sm text-gray-800 group-hover:underline">{displayUser.name}</p>
+                                <p className="font-bold text-sm text-gray-800 group-hover:underline">{displayUser.fullname}</p>
                                 <UserVerifiedBadge user={displayUser} />
                             </div>
                             <p className="text-xs text-gray-500">@{displayUser.username}</p>
@@ -57,7 +57,7 @@ const ReviewItem: React.FC<ReviewItemProps> = ({ review, reviewedUser, onViewPro
                     <StarRating rating={review.rating} />
                 </div>
                  {reviewedUser && (
-                    <p className="text-xs text-gray-500 mt-1 italic">Your review for {reviewedUser.name}</p>
+                    <p className="text-xs text-gray-500 mt-1 italic">Your review for {reviewedUser.fullname}</p>
                 )}
                 <p className="text-sm text-gray-700 mt-2">{review.text}</p>
             </div>
