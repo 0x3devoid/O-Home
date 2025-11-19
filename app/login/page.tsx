@@ -165,7 +165,6 @@ const Login = () => {
                 console.log(response.data)
                 const userData =  response.data;
                 const token = response.data.accessToken;
-
                 setCurrentUser(userData, token);
                 router.push('/home')
             } else if (response.status === 201) {

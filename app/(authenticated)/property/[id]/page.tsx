@@ -59,11 +59,11 @@ export default function PropertyPage({ params }: { params: { id: string } }) {
           <div className="flex items-center gap-4">
             <img
               src={property.lister?.avatar || "/placeholder.svg"}
-              alt={property.lister?.name}
+              alt={property.lister?.fullname}
               className="w-12 h-12 rounded-full"
             />
             <div>
-              <p className="font-semibold text-gray-800">{property.lister?.name}</p>
+              <p className="font-semibold text-gray-800">{property.lister?.fullname}</p>
               <p className="text-sm text-gray-500">@{property.lister?.username}</p>
             </div>
           </div>
