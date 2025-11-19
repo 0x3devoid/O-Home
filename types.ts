@@ -8,8 +8,8 @@ export interface Story {
 
 export interface User {
   id: number;
-  fullname: string;
-  name: string;
+  fullname?: string;
+  name?: string;
   username: string;
   avatar: string;
   bannerImage?: string;

@@ -40,7 +40,7 @@ export const users: User[] = [
     feedbacksCount: 1, 
     likedPropertyIds: [2, 7, 11],
     reviews: [
-      { id: 1, reviewer: { id: 3, fullname: 'Mrs. Adebayo', username: 'adebayo_props', avatar: 'https://randomuser.me/api/portraits/women/2.jpg', agentStatus: 'none', listerStatus: 'verified' }, rating: 5, text: "Amaka was a wonderful and respectful tenant. Paid her rent on time and kept the apartment in great condition. Highly recommended!", timestamp: "2023-12-15T14:00:00Z" }
+      { id: 1, reviewer: { id: 3, name: 'Mrs. Adebayo', username: 'adebayo_props', avatar: 'https://randomuser.me/api/portraits/women/2.jpg', agentStatus: 'none', listerStatus: 'verified' }, rating: 5, text: "Amaka was a wonderful and respectful tenant. Paid her rent on time and kept the apartment in great condition. Highly recommended!", timestamp: "2023-12-15T14:00:00Z" }
     ],
     stories: [
       { id: 101, type: 'image', url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800', timestamp: oneHourAgo, duration: 5 },
@@ -50,7 +50,7 @@ export const users: User[] = [
   },
   { 
     id: 2, 
-    fullname: 'David', 
+    name: 'David', 
     username: 'david_agent',
     avatar: 'https://randomuser.me/api/portraits/men/1.jpg', 
     bannerImage: 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=1200&auto=format&fit=crop',
@@ -71,8 +71,8 @@ export const users: User[] = [
     feedbacksCount: 2, 
     likedPropertyIds: [1, 3, 5, 10],
     reviews: [
-      { id: 2, reviewer: { id: 1, fullname: 'Amaka', username: 'amaka_dev', avatar: 'https://randomuser.me/api/portraits/women/1.jpg', agentStatus: 'none', listerStatus: 'unverified' }, rating: 5, text: "David was incredibly helpful during my apartment search. He's professional, knowledgeable, and made the verification process seamless. A true 5-star agent!", timestamp: "2024-06-20T11:30:00Z" },
-      { id: 3, reviewer: { id: 3, fullname: 'Mrs. Adebayo', username: 'adebayo_props', avatar: 'https://randomuser.me/api/portraits/women/2.jpg', agentStatus: 'none', listerStatus: 'verified' }, rating: 4, text: "Very efficient in verifying my property listing. The process was quick.", timestamp: "2024-05-10T18:00:00Z" }
+      { id: 2, reviewer: { id: 1, name: 'Amaka', username: 'amaka_dev', avatar: 'https://randomuser.me/api/portraits/women/1.jpg', agentStatus: 'none', listerStatus: 'unverified' }, rating: 5, text: "David was incredibly helpful during my apartment search. He's professional, knowledgeable, and made the verification process seamless. A true 5-star agent!", timestamp: "2024-06-20T11:30:00Z" },
+      { id: 3, reviewer: { id: 3, name: 'Mrs. Adebayo', username: 'adebayo_props', avatar: 'https://randomuser.me/api/portraits/women/2.jpg', agentStatus: 'none', listerStatus: 'verified' }, rating: 4, text: "Very efficient in verifying my property listing. The process was quick.", timestamp: "2024-05-10T18:00:00Z" }
     ],
     activeInNeighborhoods: [1, 2],
     stories: [
@@ -82,7 +82,7 @@ export const users: User[] = [
   },
   { 
     id: 3, 
-    fullname: 'Mrs. Adebayo', 
+    name: 'Mrs. Adebayo', 
     username: 'adebayo_props',
     avatar: 'https://randomuser.me/api/portraits/women/2.jpg', 
     bannerImage: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200&auto=format&fit=crop',
